@@ -7,6 +7,7 @@ from Ayo.dags.node_commons import NodeType, NodeIOSchema, NodeAnnotation, NodeOp
 from Ayo.engines.engine_types import EngineType
 import os
 
+# visualize the DAG with different colors identifying different node types 
 
 def visualize_dag_with_node_types(dag: DAG, output_path: str = None, show: bool = True, left_to_right: bool = False):
     """

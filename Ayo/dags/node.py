@@ -46,7 +46,7 @@ class Node:
         if engine_type and not EngineType.validate(engine_type):
             raise ValueError(f"Unsupported engine type: {engine_type}")
         
-        # 初始化基本属性
+        # Initialize basic attributes
         self.input_values = {}
         self.input_kwargs = {} # the input parameters for the node, {k:v}, k is the name of the input field, v is the value of the input field, default is None 
 
@@ -60,7 +60,7 @@ class Node:
         self.input_key_to_parent: Dict[str, str] = {}
 
         
-        # 针对不同类型节点的特殊处理
+        # Special processing for different types of nodes
         if node_type == NodeType.INPUT:
             self._init_input_node(kwargs)
             self.engine_type = kwargs.get("engine_type", EngineType.INPUT)
