@@ -4,7 +4,7 @@ This repository contains the prototype implementation for our ASPLOS'25 paper: [
 
 Ayo is a fine-grained orchestration framework designed for building and optimizing AI-powered applications—such as Retrieval-Augmented Generation (RAG) workflows—in environments where inference engines are ***deployed locally*** rather than accessed via remote APIs.
 
-Unlike existing frameworks that treat workflows as coarse-grained, sequential module chains, Ayo introduces a task-primitive-based abstraction, enabling highly flexible and dynamic orchestration. With minimal user input, Ayo automatically optimizes workflows for performance, exploiting parallelism, pipelining, and inherent scheduling strategies.
+Unlike existing frameworks that usually treat workflows as coarse-grained, sequential module chains, Ayo introduces a task-primitive-based abstraction, enabling highly flexible and dynamic orchestration. With minimal user input, Ayo automatically optimizes workflows for performance, exploiting parallelism, pipelining, and inherent scheduling strategies.
 
 >  **Note**：Some parts of the repo are still under construction, e.g. the unified multi-request scheduling for engine schedulers, user-friendly interface, and the documentation. We would keep updating these. 
 
@@ -23,10 +23,10 @@ Unlike existing frameworks that treat workflows as coarse-grained, sequential mo
 
 1. Install dependencies:
 
-Install postgres and pgvector:
+Install postgres and pgvector: 
 ```bash
 sudo apt-get install postgresql postgresql-contrib libpq-dev
-sudo -u postgres psql template1 -c "CREATE EXTENSION vector;"
+sudo -u postgres psql template1 -c "CREATE EXTENSION vector;" # you could install through other ways as well
 ```
 
 Install our modified vllm:

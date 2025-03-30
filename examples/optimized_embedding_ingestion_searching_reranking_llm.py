@@ -236,7 +236,7 @@ def create_base_dag():
     
     
     
-
+    #some dummy input data
     base_dag.set_query_inputs(
         {
                  "passages": [
