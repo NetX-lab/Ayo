@@ -1,0 +1,14 @@
+asyncpg==0.30.0
+fastapi==0.115.8
+google_api_python_client==2.125.0
+llama_index==0.12.19
+numpy==1.24.3
+pandas==1.1.5
+pgvector==0.2.5
+psycopg==3.1.18
+pydantic==1.10.13
+ray==2.10.0
+Requests==2.32.3
+sentence_transformers==2.6.1
+torch==2.4.0+cu121
+tqdm==4.66.2
