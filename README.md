@@ -224,6 +224,7 @@ We list open-source projects used by us and our modifications to them (if any).
 - [Ray](https://github.com/ray-project/ray)
 - [postgresql](https://www.postgresql.org/)
 - [pgvector](https://github.com/pgvector/pgvector)
+- [sentence-transformers](https://github.com/UKPLab/sentence-transformers)
 
 
 
