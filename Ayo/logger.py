@@ -191,7 +191,7 @@ def get_logger(name: str = "ayo",
     return AyoLogger(name=name, level=level, log_file=log_file, use_colors=use_colors)
 
 
-GLOBAL_INFO_LEVEL = "INFO"
+GLOBAL_INFO_LEVEL = os.environ.get("AYO_INFO_LEVEL", "INFO")
 
 default_logger = AyoLogger(level=GLOBAL_INFO_LEVEL)
 
