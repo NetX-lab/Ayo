@@ -289,7 +289,7 @@ class EngineScheduler(BaseEngineScheduler):
                 await self.complete_queue.put(request)
                 logger.info(f"Moved request {request_id} to complete queue")
                 
-                # 清理pending_requests
+                # Clean up pending_requests
                 del self.pending_requests[request_id]
             else:
                 logger.warning(f"Received result for unknown request {request_id}")

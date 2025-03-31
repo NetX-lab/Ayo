@@ -100,7 +100,7 @@ class QueryRunner:
                 potential_prefilling_status=[parent.status in [NodeStatus.RUNNING, NodeStatus.COMPLETED] for parent in node.parents if parent.op_type == NodeOps.LLM_PREFILLING] 
                 potential_full_prefilling_status=[parent.status in [NodeStatus.RUNNING, NodeStatus.COMPLETED] for parent in node.parents if parent.op_type == NodeOps.LLM_FULL_PREFILLING]
                 
-                # 检查是否至少有一个父节点是预填充类型，并且所有这类父节点都已准备好
+                # Check if at least one parent node is prefilling type, and all such parent nodes are ready
                 has_prefilling_parents = len(potential_prefilling_status) > 0
                 has_full_prefilling_parents = len(potential_full_prefilling_status) > 0
                 
