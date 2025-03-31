@@ -31,6 +31,7 @@ sudo -u postgres psql template1 -c "CREATE EXTENSION vector;" # you could instal
 
 Install our modified vllm:
 ```bash
+git clone --recurse-submodules https://github.com/NetX-lab/Ayo.git # clone the repo and submodules
 cd vllm 
 pip install -e . 
 ```

@@ -134,7 +134,7 @@ def test_diamond_dag():
     # Validate topological sort
     sorted_nodes = dag.topological_sort()
     print(sorted_nodes)
-    assert len(sorted_nodes) == 6  # input_node + 4个计算节点 + output_node
+    assert len(sorted_nodes) == 6  # input_node + 4 compute nodes + output_node
     assert sorted_nodes[0].node_type == NodeType.INPUT
     assert sorted_nodes[1] == node1
     assert set(sorted_nodes[2:4]) == {node2, node3}
