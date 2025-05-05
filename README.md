@@ -25,8 +25,12 @@ Unlike existing frameworks that usually treat workflows as coarse-grained, seque
 
 Install postgres and pgvector: 
 ```bash
-sudo apt-get install postgresql postgresql-contrib libpq-dev
-sudo -u postgres psql template1 -c "CREATE EXTENSION vector;" # you could install through other ways as well
+sudo apt-get install postgresql postgresql-contrib libpq-dev # install postgresql
+git clone https://github.com/pgvector/pgvector.git # compile and install pgvector; you could install through other ways as well
+cd pgvector
+make
+sudo make install
+sudo -u postgres psql template1 -c "CREATE EXTENSION vector;" # test
 ```
 
 Install our modified vllm:
