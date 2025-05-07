@@ -223,7 +223,7 @@ The execution latency is:
 
 ## To-Do List
 
-- [ ] Add the multiple-LLM calling example
+- [x] Add the multiple-LLM calling example
 - [ ] Refine the support for more LLM prompt templates
 - [ ] Add the unified multi-request scheduling
 
