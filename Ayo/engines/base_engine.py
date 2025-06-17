@@ -1,13 +1,16 @@
-from typing import Dict, List, Optional, Any
-import ray
 import asyncio
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+
+import ray
+
 
 @dataclass
 class BaseRequest:
     """Base data class for all engine requests"""
+
     request_id: str
     query_id: str  # Group requests from same query
     callback_ref: Any  # Ray ObjectRef for result
@@ -16,38 +19,40 @@ class BaseRequest:
 
 class BaseEngine(ABC):
     """Base class for all Ray Actor engines
-    
+
     Features:
     - Async request handling
     - Request queuing and batching
     - Request tracking by query_id
     """
-    
-    def __init__(self,
-                 max_batch_size: int = 32,
-                 max_queue_size: int = 1000,
-                 scheduler_ref: Optional[ray.actor.ActorHandle] = None,
-                 **kwargs):
-        
+
+    def __init__(
+        self,
+        max_batch_size: int = 32,
+        max_queue_size: int = 1000,
+        scheduler_ref: Optional[ray.actor.ActorHandle] = None,
+        **kwargs,
+    ):
+
         self.max_batch_size = max_batch_size
         self.max_queue_size = max_queue_size
         self.scheduler_ref = scheduler_ref
-        
+
         # Async queues
         self.request_queue = asyncio.Queue(maxsize=max_queue_size)
         self.batch_queue = asyncio.Queue(maxsize=max_queue_size)
-        
+
         # Track requests by query_id
         self.query_requests: Dict[str, List[BaseRequest]] = {}
-        
+
         # Create event loop
         self.loop = asyncio.get_event_loop()
-        
+
         # Start processing tasks
         self.running = True
         self.tasks = [
             self.loop.create_task(self._batch_requests()),
-            self.loop.create_task(self._process_batches())
+            self.loop.create_task(self._process_batches()),
         ]
 
     @abstractmethod
@@ -56,7 +61,9 @@ class BaseEngine(ABC):
         pass
 
     @abstractmethod
-    async def submit_request(self, request_id: str, query_id: str, **kwargs) -> ray.ObjectRef:
+    async def submit_request(
+        self, request_id: str, query_id: str, **kwargs
+    ) -> ray.ObjectRef:
         """Submit a new request - must be implemented by subclasses"""
         pass
 
@@ -89,8 +96,7 @@ class BaseEngine(ABC):
             try:
                 try:
                     batch_data = await asyncio.wait_for(
-                        self.batch_queue.get(),
-                        timeout=0.1
+                        self.batch_queue.get(), timeout=0.1
                     )
                 except asyncio.TimeoutError:
                     continue

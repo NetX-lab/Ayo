@@ -1,14 +1,13 @@
-from typing import Any, Dict, List, Optional
-from enum import Enum
 import time
-from dataclasses import dataclass, field
-import ray
+from typing import Any, Dict, Optional
+
 from Ayo.dags.dag import DAG
 from Ayo.queries.query_state import QueryStates, QueryStatus
 
 
 class Query:
     """Base class for all query types in the system"""
+
     def __init__(
         self,
         uuid: str,
@@ -17,9 +16,9 @@ class Query:
         DAG: DAG,
         context: Optional[Dict] = None,
         uploaded_file: Optional[Any] = None,
-        timeout: float = 30.0
+        timeout: float = 30.0,
         # here some attributes maybe not used... to clear some in the future
-        ):
+    ):
         # Basic query information
         self.uuid = uuid
         self.query_id = query_id
@@ -27,10 +26,10 @@ class Query:
         self.context = context or {}
         self.DAG = DAG
         self.uploaded_file = uploaded_file
-        
+
         # Initialize DAG information
         self._init_dag()
-        
+
         # Query state management
         self.status = QueryStatus.INIT
         self.query_state = QueryStates.remote()
@@ -40,7 +39,7 @@ class Query:
         self.end_time: Optional[float] = None
         self.timeout = timeout
         self.error_message: Optional[str] = None
-        
+
         # Results storage
         self.results: Dict[str, Any] = {}
         self.metadata: Dict[str, Any] = {}
@@ -98,7 +97,7 @@ class Query:
         name = name[0]
         obj = self if obj is None else obj
         return obj, name, next_name, recurse
-    
+
     def get_status(self) -> QueryStatus:
         """Get query status"""
         return self.status
@@ -134,7 +133,7 @@ class Query:
             "error_message": self.error_message,
             "results": self.results,
             "context": self.context,
-            "metadata": self.metadata
+            "metadata": self.metadata,
         }
 
     def __str__(self):

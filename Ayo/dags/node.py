@@ -1,30 +1,36 @@
-from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import ray
-from typing import List, Dict, Optional, Any, Tuple, Union
-from pydantic import Field
-from dataclasses import dataclass
-from Ayo.engines.payload_transformers import TRANSFORMER_REGISTRY, DefaultTransformer
-from Ayo.engines.engine_types import EngineType, ENGINE_REGISTRY
-from Ayo.dags.node_commons import NodeType, NodeOps, NodeAnnotation, NodeStatus, NodeIOSchema
-from Ayo.logger import get_logger, GLOBAL_INFO_LEVEL
+
+from Ayo.dags.node_commons import (
+    NodeAnnotation,
+    NodeIOSchema,
+    NodeOps,
+    NodeStatus,
+    NodeType,
+)
+from Ayo.engines.engine_types import EngineType
+from Ayo.logger import GLOBAL_INFO_LEVEL, get_logger
 
 logger = get_logger(__name__, level=GLOBAL_INFO_LEVEL)
 
 
 class Node:
     """Node in workflow template representing a component/primitive"""
-    
-    def __init__(self,
-                 name: str, 
-                 node_type: NodeType,
-                 engine_type: Optional[str] = None,
-                 op_type: Optional[NodeOps] = None,         
-                 io_schema: Optional[NodeIOSchema] = None,
-                 anno: NodeAnnotation = NodeAnnotation.NONE,
-                 config: Optional[Dict] = None,
-                 **kwargs):
+
+    def __init__(
+        self,
+        name: str,
+        node_type: NodeType,
+        engine_type: Optional[str] = None,
+        op_type: Optional[NodeOps] = None,
+        io_schema: Optional[NodeIOSchema] = None,
+        anno: NodeAnnotation = NodeAnnotation.NONE,
+        config: Optional[Dict] = None,
+        **kwargs,
+    ):
         """Initialize a node
-        
+
         Args:
             name: Name of the node
             node_type: Type of the node
@@ -41,14 +47,16 @@ class Node:
         self.io_schema = io_schema
         self.anno = anno
         self.config = config or {}
-        
+
         # Validate engine type if provided
         if engine_type and not EngineType.validate(engine_type):
             raise ValueError(f"Unsupported engine type: {engine_type}")
-        
+
         # Initialize basic attributes
         self.input_values = {}
-        self.input_kwargs = {} # the input parameters for the node, {k:v}, k is the name of the input field, v is the value of the input field, default is None 
+        self.input_kwargs = (
+            {}
+        )  # the input parameters for the node, {k:v}, k is the name of the input field, v is the value of the input field, default is None
 
         self.output_names = []
         self.parents: List[Node] = []
@@ -59,7 +67,6 @@ class Node:
         self.input_key_from_parents: Dict[str, str] = {}
         self.input_key_to_parent: Dict[str, str] = {}
 
-        
         # Special processing for different types of nodes
         if node_type == NodeType.INPUT:
             self._init_input_node(kwargs)
@@ -74,10 +81,9 @@ class Node:
 
         self.depth = 0
 
-
-        # for opt  
+        # for opt
         self.decomposed: bool = False
-        self.input_shards_mapping: Dict[str, List[Union[slice, tuple]]] = {}  
+        self.input_shards_mapping: Dict[str, List[Union[slice, tuple]]] = {}
         """
         The shards mapping for the input fields, the key is the name of the input field, the value is the list of shards
         - key: the name of the input field
@@ -86,7 +92,6 @@ class Node:
           2. (start, end) tuple: will be converted to slice object
         Example: {"text": [slice(0, 512), (513, 1024)]}
         """
-
 
         # be used to record the output shape info of the node
         # {
@@ -103,17 +108,12 @@ class Node:
     def init_output_shape_info(self) -> None:
         """Initialize the output shape info of the node"""
         for output_name, output_type in self.io_schema.output_format.items():
-            self.output_shape_info[output_name] = {
-                "type": output_type,
-                "shape": None
-            }
+            self.output_shape_info[output_name] = {"type": output_type, "shape": None}
 
     def _init_input_node(self, kwargs: Dict) -> None:
         """Initialize input node specific attributes"""
-        self.input_values = kwargs.get("input_values", {}) 
-        self.input_kwargs = {
-            k: None for k, v in self.io_schema.input_format.items()
-        }
+        self.input_values = kwargs.get("input_values", {})
+        self.input_kwargs = {k: None for k, v in self.io_schema.input_format.items()}
         self.output_names = list(self.io_schema.output_format.keys())
 
     def _init_compute_node(self, kwargs: Dict) -> None:
@@ -121,9 +121,7 @@ class Node:
         if not self.io_schema:
             raise ValueError("Compute node requires input/output schema")
         self.output_names = list(self.io_schema.output_format.keys())
-        self.input_kwargs = {
-            k: None for k, v in self.io_schema.input_format.items()
-        }       
+        self.input_kwargs = {k: None for k, v in self.io_schema.input_format.items()}
 
         # add the specific attributes for the compute node
 
@@ -138,20 +136,20 @@ class Node:
             # validate the basic attributes
             if not self.name:
                 raise ValueError("Node name cannot be empty")
-                
+
             # validate the specific requirements for the node type
             if self.node_type == NodeType.COMPUTE:
                 if not self.io_schema:
                     raise ValueError("Compute node requires io_schema")
                 if not self.engine_type:
                     raise ValueError("Compute node requires engine_type")
-                    
+
             # validate the node connections
             if self.node_type == NodeType.INPUT and self.parents:
                 raise ValueError("Input node should not have parents")
             if self.node_type == NodeType.OUTPUT and self.children:
                 raise ValueError("Output node should not have children")
-                
+
             return True
         except Exception as e:
             self.error_message = str(e)
@@ -173,72 +171,75 @@ class Node:
         if self.io_schema:
             return list(self.io_schema.input_format.keys())
         return list(self.input_kwargs.keys())
-    
+
     def refresh_io_schema(self, IO_schema: NodeIOSchema) -> None:
         """Refresh the io_schema of the node"""
         self.io_schema = IO_schema
         self.output_names = list(self.io_schema.output_format.keys())
-        self.input_kwargs = {
-            k: None for k, v in self.io_schema.input_format.items()
-        }
+        self.input_kwargs = {k: None for k, v in self.io_schema.input_format.items()}
 
-
-    def add_parent(self, parent: 'Node') -> None:
+    def add_parent(self, parent: "Node") -> None:
         """Add a parent node and establish input/output connections"""
         if parent not in self.parents:
             self.parents.append(parent)
             # Find matching input/output keys
             intersection = set(parent.output_names).intersection(set(self.input_names))
-            logger.debug(f"parent: {parent.name}, child: {self.name}, intersection: {intersection}")
+            logger.debug(
+                f"parent: {parent.name}, child: {self.name}, intersection: {intersection}"
+            )
             if intersection:
                 if len(intersection) > 1:
-                    logger.warning(f"node: {self.name} has multiple input keys from parent: {parent.name} with intersection: {intersection}, please check the io_schema and the node connections")
+                    logger.warning(
+                        f"node: {self.name} has multiple input keys from parent: {parent.name} with intersection: {intersection}, please check the io_schema and the node connections"
+                    )
                 for key in intersection:
-                    #here we assume the primitive would only provide one output  
+                    # here we assume the primitive would only provide one output
                     self.input_key_from_parents[parent.name] = key
                     self.input_key_to_parent[key] = parent
             if self not in parent.children:
                 parent.children.append(self)
-    
-    def add_child(self, child: 'Node') -> None:
+
+    def add_child(self, child: "Node") -> None:
         """Add a child node"""
         if child not in self.children:
             self.children.append(child)
             if self not in child.parents:
                 child.add_parent(self)
-    
-    def __rshift__(self, other: 'Node') -> 'Node':
+
+    def __rshift__(self, other: "Node") -> "Node":
         """Implement >> operator for creating dependencies"""
         self.add_child(other)
         return other
-    
+
     def is_splittable(self) -> bool:
         """Check if node is splittable"""
         return self.anno == NodeAnnotation.SPLITTABLE
-    
+
     def is_batchable(self) -> bool:
         """Check if node is batchable"""
         return self.anno == NodeAnnotation.BATCHABLE
-    
+
     @property
     def is_ready(self) -> bool:
         """Check if node is ready for execution"""
         if self.status != NodeStatus.PENDING:
             return False
         return all(parent.status == NodeStatus.COMPLETED for parent in self.parents)
-    
+
     def get_engine_type(self) -> str:
         """Get the engine type for this node"""
         return self.engine_type
-    
+
     def apply_shard(self, data: Any, shards: List[Union[slice, tuple]]) -> List[Any]:
         """Apply the shards to the data"""
-        print(f"apply_shard for node: {self.name}, data type: {type(data)}, shards: {shards}")
+        print(
+            f"apply_shard for node: {self.name}, data type: {type(data)}, shards: {shards}"
+        )
         print(f"data len: {len(data)}")
         print(f"shards: {shards}")
         result = []
         if not isinstance(shards, list):
-            shards=[shards]
+            shards = [shards]
         for s in shards:
             try:
                 if isinstance(s, slice):
@@ -246,9 +247,13 @@ class Node:
                 elif isinstance(s, tuple) and len(s) == 2:
                     result.extend(data[slice(*s)])
                 else:
-                    raise ValueError(f"Invalid shard format: {s}, expected slice or (start, end) tuple")
+                    raise ValueError(
+                        f"Invalid shard format: {s}, expected slice or (start, end) tuple"
+                    )
             except (TypeError, IndexError) as e:
-                raise ValueError(f"Failed to apply shard {s} to data of type {type(data)}: {e}")
+                raise ValueError(
+                    f"Failed to apply shard {s} to data of type {type(data)}: {e}"
+                )
         return result
 
     def update_input_kwargs(self, nodes_outputs: Dict[str, Any]) -> None:
@@ -260,37 +265,42 @@ class Node:
                     for parent in self.parents:
                         if parent.name in nodes_outputs:
                             parent_output = nodes_outputs[parent.name]
-                            print(f"parent_output type: {type(parent_output)} for node: {self.name}")
+                            print(
+                                f"parent_output type: {type(parent_output)} for node: {self.name}"
+                            )
                             if input_name in parent_output:
-                                if self.decomposed and input_name in self.input_shards_mapping:
+                                if (
+                                    self.decomposed
+                                    and input_name in self.input_shards_mapping
+                                ):
                                     shards = self.input_shards_mapping[input_name]
                                     self.input_kwargs[input_name] = self.apply_shard(
-                                        parent_output[input_name], 
-                                        shards
+                                        parent_output[input_name], shards
                                     )
                                 else:
-                                    self.input_kwargs[input_name] = parent_output[input_name]
+                                    self.input_kwargs[input_name] = parent_output[
+                                        input_name
+                                    ]
                 else:
                     continue
-                                
+
         elif self.node_type == NodeType.OUTPUT:
             # the output node directly copies data from the parent node
             if len(self.parents) == 1:
                 parent = self.parents[0]
                 if parent.name in nodes_outputs:
                     self.input_kwargs = {
-                        k: nodes_outputs[parent.name][k] 
+                        k: nodes_outputs[parent.name][k]
                         for k in self.input_kwargs.keys()
                         if k in nodes_outputs[parent.name]
                     }
-    
+
     def clear_dependencies(self) -> None:
         """Clear all dependencies"""
         self.parents.clear()
         self.children.clear()
         self.input_key_from_parents.clear()
-        self.input_key_to_parent.clear() 
-
+        self.input_key_to_parent.clear()
 
     def to_dict(self) -> Dict:
         """Convert node to dictionary representation"""
@@ -299,18 +309,18 @@ class Node:
             "node_type": self.node_type.value,
             "engine_type": self.engine_type,
             "io_schema": vars(self.io_schema),
-            "status": self.status.value
+            "status": self.status.value,
         }
-    
+
     def __hash__(self) -> int:
         return hash((self.name, self.node_type))
-    
-    def __eq__(self, other: 'Node') -> bool:
+
+    def __eq__(self, other: "Node") -> bool:
         return self.name == other.name and self.node_type == other.node_type
-    
+
     def __str__(self):
         return f"Node(name={self.name}, node_type={self.node_type.value})"
-    
+
     def __repr__(self) -> str:
         return f"\n----Node({self.name})----\
                 \nNodeType({self.node_type.value})\
@@ -328,6 +338,7 @@ class Node:
     def get_shape_for_certain_types(self, data: Any) -> Tuple[int, ...]:
         """Get the shape of the data for certain types"""
         import numpy as np
+
         if isinstance(data, np.ndarray):
             return data.shape
         elif isinstance(data, list):
@@ -343,18 +354,18 @@ class Node:
         elif isinstance(data, bool):
             return (1,)
         return None
+
     def get_attr(self, key: str) -> Any:
         """get attribute of the node"""
         return getattr(self, key)
-        
+
     def set_attr(self, key: str, value: Any) -> None:
         """set attribute of the node"""
         setattr(self, key, value)
 
-
     def update_output_shape_info(self, output_data=None):
         """Update the output shape info of the node
-        
+
         Args:
             output_data: optional actual output data, used to infer the shape
         """
@@ -376,7 +387,10 @@ class Node:
             # infer the shape from the config or other information
             for output_name in self.output_names:
                 # if the node is an input node, infer the shape from the input values
-                if self.node_type == NodeType.INPUT and output_name in self.input_values:
+                if (
+                    self.node_type == NodeType.INPUT
+                    and output_name in self.input_values
+                ):
                     data = self.input_values[output_name]
                     if hasattr(data, "shape"):
                         self.output_shape_info[output_name]["shape"] = data.shape
@@ -391,8 +405,14 @@ class Node:
                     # infer the shape from the different op types
                     if self.op_type == NodeOps.EMBEDDING:
                         feature_dim = self.config.get("embedding_dim", 768)
-                        self.output_shape_info[output_name]["shape"] = (batch_size, feature_dim)
+                        self.output_shape_info[output_name]["shape"] = (
+                            batch_size,
+                            feature_dim,
+                        )
                     elif self.op_type == NodeOps.VECTORDB_SEARCHING:
                         top_k = self.config.get("top_k", None)
-                        self.output_shape_info[output_name]["shape"] = (batch_size, top_k)
+                        self.output_shape_info[output_name]["shape"] = (
+                            batch_size,
+                            top_k,
+                        )
                     # can add more shape inference logic for different op types
