@@ -12,3 +12,4 @@ Requests==2.32.3
 sentence_transformers==2.6.1
 torch==2.4.0+cu121
 tqdm==4.66.2
+pre-commit
