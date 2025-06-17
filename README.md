@@ -47,25 +47,6 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-## Pre-commit Hooks
-
-本项目推荐使用 [pre-commit](https://pre-commit.com/) 进行代码风格和质量检查。
-
-安装依赖后，建议执行以下命令安装和激活 pre-commit 钩子：
-
-```bash
-pip install pre-commit
-pre-commit install
-```
-
-这样在每次 git commit 时会自动运行代码检查。
-
-如需手动检查所有文件，可运行：
-
-```bash
-pre-commit run --all-files
-```
-
 2. Define the workflow with Nodes (Task Primitives) and Optimize the workflow with Ayo
 
 
