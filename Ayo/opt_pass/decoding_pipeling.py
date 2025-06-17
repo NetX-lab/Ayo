@@ -1,11 +1,9 @@
 import uuid
 from copy import deepcopy
-from typing import TYPE_CHECKING, Any, List, Set
+from typing import Any, List, Set
 
-if TYPE_CHECKING:
-    from Ayo.dags.dag import DAG
-    from Ayo.dags.node import Node
-
+from Ayo.dags.dag import DAG
+from Ayo.dags.node import Node
 from Ayo.dags.node_commons import NodeAnnotation, NodeIOSchema, NodeOps, NodeType
 from Ayo.engines.engine_types import EngineType
 from Ayo.logger import GLOBAL_INFO_LEVEL, get_logger

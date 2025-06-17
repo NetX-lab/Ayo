@@ -252,7 +252,7 @@ class DAG:
         # update the topological sort result of the class
         self.topo_list = sorted_list
 
-        # 更新节点深度，越靠后的节点深度越小
+        # Update node depth, the deeper the node, the smaller the depth
         total_nodes = len(sorted_list)
         for idx, node in enumerate(sorted_list):
             node.depth = total_nodes - idx - 1

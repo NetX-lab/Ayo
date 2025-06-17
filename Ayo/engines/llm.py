@@ -1,5 +1,4 @@
 import asyncio
-import datetime
 import time
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
@@ -189,11 +188,12 @@ class LLMEngine:
                     is_last_chunk=True,
                 )
 
-                formatted_time = datetime.datetime.fromtimestamp(time.time()).strftime(
-                    "%m-%d %H:%M:%S"
-                )
+                # formatted_time = datetime.datetime.fromtimestamp(time.time()).strftime(
+                #     "%m-%d %H:%M:%S"
+                # )
+
                 logger.info(
-                    f"Time {formatted_time}, LLM engine full prefilling: {request.llm_op_type} llm_internal_id: {request.llm_internal_id}, prompt: {request.prompt}, sampling_params: {sampling_params}"
+                    f"LLM engine full prefilling: {request.llm_op_type} llm_internal_id: {request.llm_internal_id}, prompt: {request.prompt}, sampling_params: {sampling_params}"
                 )
 
                 if self.scheduler_ref is not None:

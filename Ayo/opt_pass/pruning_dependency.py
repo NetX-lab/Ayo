@@ -1,15 +1,11 @@
-from typing import TYPE_CHECKING, Any, List
+from typing import Any, List
 
-from Ayo.dags.node_commons import NodeType
+from Ayo.dags.dag import DAG
+from Ayo.dags.node import Node
+from Ayo.dags.node_commons import NodeAnnotation, NodeIOSchema, NodeType
+from Ayo.engines.engine_types import EngineType
 from Ayo.logger import GLOBAL_INFO_LEVEL, get_logger
 from Ayo.opt_pass.base_pass import OPT_Pass
-
-if TYPE_CHECKING:
-    from Ayo.dags.dag import DAG
-    from Ayo.dags.node import Node
-
-from Ayo.dags.node_commons import NodeAnnotation, NodeIOSchema
-from Ayo.engines.engine_types import EngineType
 
 logger = get_logger(__name__, level=GLOBAL_INFO_LEVEL)
 

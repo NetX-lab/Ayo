@@ -20,6 +20,7 @@ default_embed_config.update(
         "max_batch_size": 1024,
     }
 )
+
 embed_config = EngineConfig(
     name="embedding_service",
     engine_type=EngineType.EMBEDDER,

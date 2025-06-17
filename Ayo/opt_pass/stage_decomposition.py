@@ -1,18 +1,15 @@
 import copy
 import math
 import time
-from typing import TYPE_CHECKING, Any, List
+from typing import Any, List
 
 from Ayo.configs.model_config import get_aggregator_config_for_parent_node
-from Ayo.logger import GLOBAL_INFO_LEVEL, get_logger
-from Ayo.opt_pass.base_pass import OPT_Pass
-
-if TYPE_CHECKING:
-    from Ayo.dags.dag import DAG
-    from Ayo.dags.node import Node
-
+from Ayo.dags.dag import DAG
+from Ayo.dags.node import Node
 from Ayo.dags.node_commons import NodeAnnotation, NodeIOSchema, NodeOps, NodeType
 from Ayo.engines.engine_types import EngineType
+from Ayo.logger import GLOBAL_INFO_LEVEL, get_logger
+from Ayo.opt_pass.base_pass import OPT_Pass
 
 logger = get_logger(__name__, level=GLOBAL_INFO_LEVEL)
 
