@@ -251,6 +251,8 @@ If you find this work useful, please cite our paper:
 title = {Towards End-to-End Optimization of LLM-based Applications with Ayo},
 author = {Xin Tan and Yimin Jiang and Yitao Yang and Hong Xu},
 booktitle = {Proceedings of the 30th ACM International Conference on Architectural Support for Programming Languages and Operating Systems, Volume 2},
+url = {https://doi.org/10.1145/3676641.3716278},
+doi = {10.1145/3676641.3716278},
 year = {2025}
 }
 
