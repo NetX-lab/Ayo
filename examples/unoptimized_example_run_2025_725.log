@@ -1,0 +1,726 @@
+      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed
+      to enhance responses by integrating information retrieved from external documents. Your primary role
+      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly
+      adhere to the content of the retrieved documents provided to you and avoid introducing information that
+      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.
+      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.
+      If the retrieved documents do not contain relevant information, explicitly state: 'Based on the
+      available information, I cannot determine the answer.'
+"
+      2. Response Formatting - Directly answer the question using the retrieved data. If multiple
+      sources provide information, synthesize them in a coherent manner. If no relevant information
+      is found, clearly state that.
+"
+      3. Clarity and Precision - Avoid speculative language such as 'I think' or 'It might be.'
+      Maintain a neutral and factual tone.
+"
+      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the
+      retrieved information concisely.
+"
+      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,
+      unverifiable claims), state: 'The retrieved documents do not provide information on this topic.'
+
+      ---
+
+      Example Interactions:
+
+      User Question: Who founded Apple Inc.?
+
+      Retrieved Context: 'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.'
+
+      Model Answer: 'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.'
+
+      ---
+
+      User Question: When was the first iPhone released, and what were its key features?
+"
+      Retrieved Context: 'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.' "
+      "'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.'
+"
+      Model Answer: 'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "
+      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.
+      Here is the question: {queries}?
+      Here is the retrieved context: {search_results}
+      Here is your answer, make sure it is concise:
+
+      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed
+      to enhance responses by integrating information retrieved from external documents. Your primary role
+      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly
+      adhere to the content of the retrieved documents provided to you and avoid introducing information that
+      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.
+      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.
+      If the retrieved documents do not contain relevant information, explicitly state: 'Based on the
+      available information, I cannot determine the answer.'
+"
+      2. Response Formatting - Directly answer the question using the retrieved data. If multiple
+      sources provide information, synthesize them in a coherent manner. If no relevant information
+      is found, clearly state that.
+"
+      3. Clarity and Precision - Avoid speculative language such as 'I think' or 'It might be.'
+      Maintain a neutral and factual tone.
+"
+      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the
+      retrieved information concisely.
+"
+      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,
+      unverifiable claims), state: 'The retrieved documents do not provide information on this topic.'
+
+      ---
+
+      Example Interactions:
+
+      User Question: Who founded Apple Inc.?
+
+      Retrieved Context: 'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.'
+
+      Model Answer: 'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.'
+
+      ---
+
+      User Question: When was the first iPhone released, and what were its key features?
+"
+      Retrieved Context: 'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.' "
+      "'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.'
+"
+      Model Answer: 'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "
+      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.
+      Here is the question: {queries}?
+      Here is the retrieved context: {search_results}
+      Here is your answer, make sure it is concise:
+
+      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed
+      to enhance responses by integrating information retrieved from external documents. Your primary role
+      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly
+      adhere to the content of the retrieved documents provided to you and avoid introducing information that
+      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.
+      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.
+      If the retrieved documents do not contain relevant information, explicitly state: 'Based on the
+      available information, I cannot determine the answer.'
+"
+      2. Response Formatting - Directly answer the question using the retrieved data. If multiple
+      sources provide information, synthesize them in a coherent manner. If no relevant information
+      is found, clearly state that.
+"
+      3. Clarity and Precision - Avoid speculative language such as 'I think' or 'It might be.'
+      Maintain a neutral and factual tone.
+"
+      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the
+      retrieved information concisely.
+"
+      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,
+      unverifiable claims), state: 'The retrieved documents do not provide information on this topic.'
+
+      ---
+
+      Example Interactions:
+
+      User Question: Who founded Apple Inc.?
+
+      Retrieved Context: 'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.'
+
+      Model Answer: 'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.'
+
+      ---
+
+      User Question: When was the first iPhone released, and what were its key features?
+"
+      Retrieved Context: 'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.' "
+      "'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.'
+"
+      Model Answer: 'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "
+      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.
+      Here is the question: {queries}?
+      Here is the retrieved context: {search_results}
+      Here is your answer, make sure it is concise:
+
+      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed
+      to enhance responses by integrating information retrieved from external documents. Your primary role
+      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly
+      adhere to the content of the retrieved documents provided to you and avoid introducing information that
+      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.
+      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.
+      If the retrieved documents do not contain relevant information, explicitly state: 'Based on the
+      available information, I cannot determine the answer.'
+"
+      2. Response Formatting - Directly answer the question using the retrieved data. If multiple
+      sources provide information, synthesize them in a coherent manner. If no relevant information
+      is found, clearly state that.
+"
+      3. Clarity and Precision - Avoid speculative language such as 'I think' or 'It might be.'
+      Maintain a neutral and factual tone.
+"
+      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the
+      retrieved information concisely.
+"
+      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,
+      unverifiable claims), state: 'The retrieved documents do not provide information on this topic.'
+
+      ---
+
+      Example Interactions:
+
+      User Question: Who founded Apple Inc.?
+
+      Retrieved Context: 'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.'
+
+      Model Answer: 'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.'
+
+      ---
+
+      User Question: When was the first iPhone released, and what were its key features?
+"
+      Retrieved Context: 'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.' "
+      "'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.'
+"
+      Model Answer: 'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "
+      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.
+      Here is the question: {queries}?
+      Here is the retrieved context: {search_results}
+      Here is your answer, make sure it is concise:
+
+[
+----Node(input_passages)----
+NodeType(input)
+EngineType(input)
+OpType(None)
+Parents([])
+Children(['(Embedding, compute)', '(Ingestion, compute)'])
+Depth(9)
+Input keys and types(["passages: <class 'list'>, shape: (666,)"])
+Input key from parents({})
+Input mapping shards({})
+Output names(['passages'])
+Config({}),
+----Node(input_queries)----
+NodeType(input)
+EngineType(input)
+OpType(None)
+Parents([])
+Children(['(QueryEmbedding, compute)', '(Reranking, compute)', '(LLMPrefilling, compute)'])
+Depth(8)
+Input keys and types(["queries: <class 'list'>, shape: (1,)"])
+Input key from parents({})
+Input mapping shards({})
+Output names(['queries'])
+Config({}),
+----Node(Embedding)----
+NodeType(compute)
+EngineType(embedder)
+OpType(embedding)
+Parents(['(input_passages, input)'])
+Children(['(Ingestion, compute)'])
+Depth(7)
+Input keys and types(["passages: <class 'NoneType'>, shape: None"])
+Input key from parents({'input_passages': 'passages'})
+Input mapping shards({})
+Output names(['passages_embeddings'])
+Config({}),
+----Node(Ingestion)----
+NodeType(compute)
+EngineType(vector_db)
+OpType(vectordb_ingestion)
+Parents(['(Embedding, compute)', '(input_passages, input)'])
+Children(['(QueryEmbedding, compute)', '(Search, compute)'])
+Depth(6)
+Input keys and types(["passages: <class 'NoneType'>, shape: None", "passages_embeddings: <class 'NoneType'>, shape: None"])
+Input key from parents({'Embedding': 'passages_embeddings', 'input_passages': 'passages'})
+Input mapping shards({})
+Output names(['index_status'])
+Config({}),
+----Node(QueryEmbedding)----
+NodeType(compute)
+EngineType(embedder)
+OpType(embedding)
+Parents(['(Ingestion, compute)', '(input_queries, input)'])
+Children(['(Search, compute)'])
+Depth(5)
+Input keys and types(["queries: <class 'NoneType'>, shape: None"])
+Input key from parents({'input_queries': 'queries'})
+Input mapping shards({})
+Output names(['queries_embeddings'])
+Config({}),
+----Node(Search)----
+NodeType(compute)
+EngineType(vector_db)
+OpType(vectordb_searching)
+Parents(['(QueryEmbedding, compute)', '(Ingestion, compute)'])
+Children(['(Reranking, compute)'])
+Depth(4)
+Input keys and types(["queries_embeddings: <class 'NoneType'>, shape: None", "index_status: <class 'NoneType'>, shape: None"])
+Input key from parents({'QueryEmbedding': 'queries_embeddings', 'Ingestion': 'index_status'})
+Input mapping shards({})
+Output names(['search_results'])
+Config({'top_k': 20}),
+----Node(Reranking)----
+NodeType(compute)
+EngineType(reranker)
+OpType(reranking)
+Parents(['(Search, compute)', '(input_queries, input)'])
+Children(['(LLMPrefilling, compute)'])
+Depth(3)
+Input keys and types(["queries: <class 'NoneType'>, shape: None", "search_results: <class 'NoneType'>, shape: None"])
+Input key from parents({'Search': 'search_results', 'input_queries': 'queries'})
+Input mapping shards({})
+Output names(['reranked_results'])
+Config({'top_k': 2}),
+----Node(LLMPrefilling)----
+NodeType(compute)
+EngineType(llm)
+OpType(llm_prefilling)
+Parents(['(Reranking, compute)', '(input_queries, input)'])
+Children(['(LLMDecoding, compute)'])
+Depth(2)
+Input keys and types(["queries: <class 'NoneType'>, shape: None", "reranked_results: <class 'NoneType'>, shape: None"])
+Input key from parents({'Reranking': 'reranked_results', 'input_queries': 'queries'})
+Input mapping shards({})
+Output names(['prefill_state'])
+Config({'prompt_template': '      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed\n      to enhance responses by integrating information retrieved from external documents. Your primary role\n      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly\n      adhere to the content of the retrieved documents provided to you and avoid introducing information that\n      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.\n      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.\n      If the retrieved documents do not contain relevant information, explicitly state: \'Based on the\n      available information, I cannot determine the answer.\'\n"\n      2. Response Formatting - Directly answer the question using the retrieved data. If multiple\n      sources provide information, synthesize them in a coherent manner. If no relevant information\n      is found, clearly state that.\n"\n      3. Clarity and Precision - Avoid speculative language such as \'I think\' or \'It might be.\'\n      Maintain a neutral and factual tone.\n"\n      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the\n      retrieved information concisely.\n"\n      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,\n      unverifiable claims), state: \'The retrieved documents do not provide information on this topic.\'\n\n      ---\n\n      Example Interactions:\n\n      User Question: Who founded Apple Inc.?\n\n      Retrieved Context: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      Model Answer: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      ---\n\n      User Question: When was the first iPhone released, and what were its key features?\n"\n      Retrieved Context: \'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.\' "\n      "\'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'\n"\n      Model Answer: \'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "\n      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.\n      Here is the question: {queries}?\n      Here is the retrieved context: {search_results}\n      Here is your answer, make sure it is concise:\n     ', 'parse_json': True, 'prompt': '      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed\n      to enhance responses by integrating information retrieved from external documents. Your primary role\n      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly\n      adhere to the content of the retrieved documents provided to you and avoid introducing information that\n      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.\n      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.\n      If the retrieved documents do not contain relevant information, explicitly state: \'Based on the\n      available information, I cannot determine the answer.\'\n"\n      2. Response Formatting - Directly answer the question using the retrieved data. If multiple\n      sources provide information, synthesize them in a coherent manner. If no relevant information\n      is found, clearly state that.\n"\n      3. Clarity and Precision - Avoid speculative language such as \'I think\' or \'It might be.\'\n      Maintain a neutral and factual tone.\n"\n      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the\n      retrieved information concisely.\n"\n      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,\n      unverifiable claims), state: \'The retrieved documents do not provide information on this topic.\'\n\n      ---\n\n      Example Interactions:\n\n      User Question: Who founded Apple Inc.?\n\n      Retrieved Context: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      Model Answer: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      ---\n\n      User Question: When was the first iPhone released, and what were its key features?\n"\n      Retrieved Context: \'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.\' "\n      "\'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'\n"\n      Model Answer: \'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "\n      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.\n      Here is the question: {queries}?\n      Here is the retrieved context: {search_results}\n      Here is your answer, make sure it is concise:\n     ', 'partial_output': False, 'partial_prefilling': False, 'llm_partial_decoding_idx': -1, 'llm_internal_id': '18050751-e6bb-420d-b522-a40595a72901', 'max_tokens': 10}),
+----Node(LLMDecoding)----
+NodeType(compute)
+EngineType(llm)
+OpType(llm_decoding)
+Parents(['(LLMPrefilling, compute)'])
+Children(['(output_result, output)'])
+Depth(1)
+Input keys and types(["prefill_state: <class 'NoneType'>, shape: None"])
+Input key from parents({'LLMPrefilling': 'prefill_state'})
+Input mapping shards({})
+Output names(['result'])
+Config({'prompt_template': '      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed\n      to enhance responses by integrating information retrieved from external documents. Your primary role\n      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly\n      adhere to the content of the retrieved documents provided to you and avoid introducing information that\n      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.\n      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.\n      If the retrieved documents do not contain relevant information, explicitly state: \'Based on the\n      available information, I cannot determine the answer.\'\n"\n      2. Response Formatting - Directly answer the question using the retrieved data. If multiple\n      sources provide information, synthesize them in a coherent manner. If no relevant information\n      is found, clearly state that.\n"\n      3. Clarity and Precision - Avoid speculative language such as \'I think\' or \'It might be.\'\n      Maintain a neutral and factual tone.\n"\n      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the\n      retrieved information concisely.\n"\n      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,\n      unverifiable claims), state: \'The retrieved documents do not provide information on this topic.\'\n\n      ---\n\n      Example Interactions:\n\n      User Question: Who founded Apple Inc.?\n\n      Retrieved Context: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      Model Answer: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      ---\n\n      User Question: When was the first iPhone released, and what were its key features?\n"\n      Retrieved Context: \'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.\' "\n      "\'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'\n"\n      Model Answer: \'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "\n      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.\n      Here is the question: {queries}?\n      Here is the retrieved context: {search_results}\n      Here is your answer, make sure it is concise:\n     ', 'parse_json': True, 'prompt': '      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed\n      to enhance responses by integrating information retrieved from external documents. Your primary role\n      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly\n      adhere to the content of the retrieved documents provided to you and avoid introducing information that\n      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.\n      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.\n      If the retrieved documents do not contain relevant information, explicitly state: \'Based on the\n      available information, I cannot determine the answer.\'\n"\n      2. Response Formatting - Directly answer the question using the retrieved data. If multiple\n      sources provide information, synthesize them in a coherent manner. If no relevant information\n      is found, clearly state that.\n"\n      3. Clarity and Precision - Avoid speculative language such as \'I think\' or \'It might be.\'\n      Maintain a neutral and factual tone.\n"\n      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the\n      retrieved information concisely.\n"\n      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,\n      unverifiable claims), state: \'The retrieved documents do not provide information on this topic.\'\n\n      ---\n\n      Example Interactions:\n\n      User Question: Who founded Apple Inc.?\n\n      Retrieved Context: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      Model Answer: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      ---\n\n      User Question: When was the first iPhone released, and what were its key features?\n"\n      Retrieved Context: \'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.\' "\n      "\'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'\n"\n      Model Answer: \'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "\n      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.\n      Here is the question: {queries}?\n      Here is the retrieved context: {search_results}\n      Here is your answer, make sure it is concise:\n     ', 'partial_output': False, 'partial_prefilling': False, 'llm_partial_decoding_idx': -1, 'llm_internal_id': '18050751-e6bb-420d-b522-a40595a72901', 'max_tokens': 10}),
+----Node(output_result)----
+NodeType(output)
+EngineType(output)
+OpType(None)
+Parents(['(LLMDecoding, compute)'])
+Children([])
+Depth(0)
+Input keys and types([])
+Input key from parents({'LLMDecoding': 'result'})
+Input mapping shards({})
+Output names([])
+Config({})]
+[36m(EngineScheduler pid=335530)[0m 2025-07-15 20:46:33 - [32mINFO[0m - ayo - [engine_scheduler.py:142] - [32mtry to create engine instance with name: embedding_service_0 for class: <Ayo.engines.embedder.ActorClass(EmbeddingEngine) object at 0x7f65164da880> with options: {'num_gpus': 1, 'num_cpus': 1}[0m
+[36m(EmbeddingEngine pid=335655)[0m CUDA is available: True
+[36m(EmbeddingEngine pid=335655)[0m Number of available GPUs: 1
+[36m(EmbeddingEngine pid=335655)[0m Current GPU device: 0
+[36m(EmbeddingEngine pid=335655)[0m GPU name: NVIDIA GeForce RTX 3090
+2025-07-15 20:46:42 - [32mINFO[0m - ayo - [app.py:138] - [32mRegistered engine embedder with scheduler Actor(EngineScheduler, 76f9f81068a75da3097edcad01000000)[0m
+[36m(EngineScheduler pid=335530)[0m 2025-07-15 20:46:42 - [32mINFO[0m - ayo - [engine_scheduler.py:154] - [32mcreated engine instance with name: embedding_service_0 for class: <Ayo.engines.embedder.ActorClass(EmbeddingEngine) object at 0x7f65164da880>[0m
+[36m(EngineScheduler pid=336094)[0m 2025-07-15 20:46:45 - [32mINFO[0m - ayo - [engine_scheduler.py:142] - [32mtry to create engine instance with name: vector_db_service_0 for class: <Ayo.engines.vector_db.ActorClass(VectorDBEngine) object at 0x7f3b40f01f40> with options: {'num_cpus': 4}[0m
+2025-07-15 20:46:48 - [32mINFO[0m - ayo - [app.py:138] - [32mRegistered engine vector_db with scheduler Actor(EngineScheduler, 6d05d63a5a8793527e6de83201000000)[0m
+[36m(EngineScheduler pid=336094)[0m 2025-07-15 20:46:48 - [32mINFO[0m - ayo - [engine_scheduler.py:154] - [32mcreated engine instance with name: vector_db_service_0 for class: <Ayo.engines.vector_db.ActorClass(VectorDBEngine) object at 0x7f3b40f01f40>[0m
+[36m(EngineScheduler pid=336567)[0m 2025-07-15 20:46:52 - [32mINFO[0m - ayo - [engine_scheduler.py:142] - [32mtry to create engine instance with name: reranker_service_0 for class: <Ayo.engines.reranker.ActorClass(RerankerEngine) object at 0x7f38f9800c40> with options: {'num_gpus': 1, 'num_cpus': 1}[0m
+2025-07-15 20:47:01 - [32mINFO[0m - ayo - [app.py:138] - [32mRegistered engine reranker with scheduler Actor(EngineScheduler, 19c88ce0643f33440ecf5f0d01000000)[0m
+[36m(EngineScheduler pid=336567)[0m 2025-07-15 20:47:01 - [32mINFO[0m - ayo - [engine_scheduler.py:154] - [32mcreated engine instance with name: reranker_service_0 for class: <Ayo.engines.reranker.ActorClass(RerankerEngine) object at 0x7f38f9800c40>[0m
+[36m(RerankerEngine pid=336755)[0m 0.03574
+[36m(EngineScheduler pid=337299)[0m 2025-07-15 20:47:04 - [32mINFO[0m - ayo - [engine_scheduler.py:142] - [32mtry to create engine instance with name: llm_service_0 for class: <Ayo.engines.llm.ActorClass(LLMEngine) object at 0x7fdd9b599430> with options: {'num_gpus': 1, 'num_cpus': 1}[0m
+[36m(LLMEngine pid=337552)[0m CUDA available: True
+[36m(LLMEngine pid=337552)[0m Number of available GPUs: 1
+[36m(LLMEngine pid=337552)[0m Current GPU device: 0
+[36m(LLMEngine pid=337552)[0m GPU name: NVIDIA GeForce RTX 3090
+[36m(LLMEngine pid=337552)[0m Initializing vLLM engine with model: meta-llama/Llama-2-7b-chat-hf
+[36m(LLMEngine pid=337552)[0m INFO 07-15 20:47:08 llm_engine.py:79] Initializing an LLM engine with config: model='meta-llama/Llama-2-7b-chat-hf', tokenizer='meta-llama/Llama-2-7b-chat-hf', tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, quantization=None, seed=0)
+[36m(LLMEngine pid=337552)[0m INFO 07-15 20:47:08 tokenizer.py:31] For some LLaMA V1 models, initializing the fast tokenizer may take a long time. To reduce the initialization time, consider using 'hf-internal-testing/llama-tokenizer' instead of the original tokenizer.
+[36m(LLMEngine pid=337552)[0m INFO 07-15 20:47:14 llm_engine.py:250] # GPU blocks: 1044, # CPU blocks: 512
+[36m(LLMEngine pid=337552)[0m init cache cost: 2.7943035061471164
+2025-07-15 20:47:25 - [32mINFO[0m - ayo - [app.py:138] - [32mRegistered engine llm with scheduler Actor(EngineScheduler, c905cb70f54c48aaaebe640a01000000)[0m
+[36m(EngineScheduler pid=337299)[0m 2025-07-15 20:47:25 - [32mINFO[0m - ayo - [engine_scheduler.py:154] - [32mcreated engine instance with name: llm_service_0 for class: <Ayo.engines.llm.ActorClass(LLMEngine) object at 0x7fdd9b599430>[0m
+[36m(LLMEngine pid=337552)[0m vLLM engine initialized with model: meta-llama/Llama-2-7b-chat-hf
+2025-07-15 20:47:31 - [32mINFO[0m - ayo - [app.py:181] - [32mReceived new query request: query_id=random-test-0[0m
+2025-07-15 20:47:31 - [32mINFO[0m - ayo - [app.py:194] - [32mQuery added to active queries: query_id=random-test-0[0m
+2025-07-15 20:47:31 - [32mINFO[0m - ayo - [app.py:197] - [32mQuery enqueued: query_id=random-test-0, queue_size=1[0m
+2025-07-15 20:47:31 - [32mINFO[0m - ayo - [app.py:228] - [32mRetrieved query from queue: query_id=random-test-0[0m
+2025-07-15 20:47:31 - [32mINFO[0m - ayo - [app.py:247] - [32mStarting query processing: query_id=random-test-0[0m
+2025-07-15 20:47:31 - [32mINFO[0m - ayo - [app.py:267] - [32mStarting DAG optimization: query_id=random-test-0[0m
+2025-07-15 20:47:31 - [32mINFO[0m - ayo - [dag.py:282] - [32mOptimizing DAG for query random-test-0 with passes [][0m
+2025-07-15 20:47:31 - [32mINFO[0m - ayo - [app.py:270] - [32mSubmitting query to graph scheduler: query_id=random-test-0[0m
+2025-07-15 20:47:31 - [32mINFO[0m - ayo - [app.py:277] - [32mCreating query monitor task: query_id=random-test-0[0m
+2025-07-15 20:47:31 - [32mINFO[0m - ayo - [app.py:290] - [32mStarting query status monitoring: query_id=random-test-0[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:31 - [32mINFO[0m - ayo - [graph_scheduler.py:48] - [32mquery.query_state in query runner: Actor(QueryStates, 3dec4edac5ce9f4cebf43daa01000000)[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:31 - [32mINFO[0m - ayo - [graph_scheduler.py:74] - [32mDAG input nodes: [
+[36m(GraphScheduler pid=335529)[0m ----Node(input_passages)----
+[36m(GraphScheduler pid=335529)[0m NodeType(input)
+[36m(GraphScheduler pid=335529)[0m EngineType(input)
+[36m(GraphScheduler pid=335529)[0m OpType(None)
+[36m(GraphScheduler pid=335529)[0m Parents([])
+[36m(GraphScheduler pid=335529)[0m Children(['(Embedding, compute)', '(Ingestion, compute)'])
+[36m(GraphScheduler pid=335529)[0m Depth(9)
+[36m(GraphScheduler pid=335529)[0m Input keys and types(["passages: <class 'list'>, shape: (666,)"])
+[36m(GraphScheduler pid=335529)[0m Input key from parents({})
+[36m(GraphScheduler pid=335529)[0m Input mapping shards({})
+[36m(GraphScheduler pid=335529)[0m Output names(['passages'])
+[36m(GraphScheduler pid=335529)[0m Config({}),
+[36m(GraphScheduler pid=335529)[0m ----Node(input_queries)----
+[36m(GraphScheduler pid=335529)[0m NodeType(input)
+[36m(GraphScheduler pid=335529)[0m EngineType(input)
+[36m(GraphScheduler pid=335529)[0m OpType(None)
+[36m(GraphScheduler pid=335529)[0m Parents([])
+[36m(GraphScheduler pid=335529)[0m Children(['(QueryEmbedding, compute)', '(Reranking, compute)', '(LLMPrefilling, compute)'])
+[36m(GraphScheduler pid=335529)[0m Depth(8)
+[36m(GraphScheduler pid=335529)[0m Input keys and types(["queries: <class 'list'>, shape: (1,)"])
+[36m(GraphScheduler pid=335529)[0m Input key from parents({})
+[36m(GraphScheduler pid=335529)[0m Input mapping shards({})
+[36m(GraphScheduler pid=335529)[0m Output names(['queries'])
+[36m(GraphScheduler pid=335529)[0m Config({})][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:31 - [32mINFO[0m - ayo - [graph_scheduler.py:75] - [32mDAG compute nodes: [
+[36m(GraphScheduler pid=335529)[0m ----Node(Embedding)----
+[36m(GraphScheduler pid=335529)[0m NodeType(compute)
+[36m(GraphScheduler pid=335529)[0m EngineType(embedder)
+[36m(GraphScheduler pid=335529)[0m OpType(embedding)
+[36m(GraphScheduler pid=335529)[0m Parents(['(input_passages, input)'])
+[36m(GraphScheduler pid=335529)[0m Children(['(Ingestion, compute)'])
+[36m(GraphScheduler pid=335529)[0m Depth(7)
+[36m(GraphScheduler pid=335529)[0m Input keys and types(["passages: <class 'NoneType'>, shape: None"])
+[36m(GraphScheduler pid=335529)[0m Input key from parents({'input_passages': 'passages'})
+[36m(GraphScheduler pid=335529)[0m Input mapping shards({})
+[36m(GraphScheduler pid=335529)[0m Output names(['passages_embeddings'])
+[36m(GraphScheduler pid=335529)[0m Config({}),
+[36m(GraphScheduler pid=335529)[0m ----Node(Ingestion)----
+[36m(GraphScheduler pid=335529)[0m NodeType(compute)
+[36m(GraphScheduler pid=335529)[0m EngineType(vector_db)
+[36m(GraphScheduler pid=335529)[0m OpType(vectordb_ingestion)
+[36m(GraphScheduler pid=335529)[0m Parents(['(Embedding, compute)', '(input_passages, input)'])
+[36m(GraphScheduler pid=335529)[0m Children(['(QueryEmbedding, compute)', '(Search, compute)'])
+[36m(GraphScheduler pid=335529)[0m Depth(6)
+[36m(GraphScheduler pid=335529)[0m Input keys and types(["passages: <class 'NoneType'>, shape: None", "passages_embeddings: <class 'NoneType'>, shape: None"])
+[36m(GraphScheduler pid=335529)[0m Input key from parents({'Embedding': 'passages_embeddings', 'input_passages': 'passages'})
+[36m(GraphScheduler pid=335529)[0m Input mapping shards({})
+[36m(GraphScheduler pid=335529)[0m Output names(['index_status'])
+[36m(GraphScheduler pid=335529)[0m Config({}),
+[36m(GraphScheduler pid=335529)[0m ----Node(QueryEmbedding)----
+[36m(GraphScheduler pid=335529)[0m NodeType(compute)
+[36m(GraphScheduler pid=335529)[0m EngineType(embedder)
+[36m(GraphScheduler pid=335529)[0m OpType(embedding)
+[36m(GraphScheduler pid=335529)[0m Parents(['(Ingestion, compute)', '(input_queries, input)'])
+[36m(GraphScheduler pid=335529)[0m Children(['(Search, compute)'])
+[36m(GraphScheduler pid=335529)[0m Depth(5)
+[36m(GraphScheduler pid=335529)[0m Input keys and types(["queries: <class 'NoneType'>, shape: None"])
+[36m(GraphScheduler pid=335529)[0m Input key from parents({'input_queries': 'queries'})
+[36m(GraphScheduler pid=335529)[0m Input mapping shards({})
+[36m(GraphScheduler pid=335529)[0m Output names(['queries_embeddings'])
+[36m(GraphScheduler pid=335529)[0m Config({}),
+[36m(GraphScheduler pid=335529)[0m ----Node(Search)----
+[36m(GraphScheduler pid=335529)[0m NodeType(compute)
+[36m(GraphScheduler pid=335529)[0m EngineType(vector_db)
+[36m(GraphScheduler pid=335529)[0m OpType(vectordb_searching)
+[36m(GraphScheduler pid=335529)[0m Parents(['(QueryEmbedding, compute)', '(Ingestion, compute)'])
+[36m(GraphScheduler pid=335529)[0m Children(['(Reranking, compute)'])
+[36m(GraphScheduler pid=335529)[0m Depth(4)
+[36m(GraphScheduler pid=335529)[0m Input keys and types(["queries_embeddings: <class 'NoneType'>, shape: None", "index_status: <class 'NoneType'>, shape: None"])
+[36m(GraphScheduler pid=335529)[0m Input key from parents({'QueryEmbedding': 'queries_embeddings', 'Ingestion': 'index_status'})
+[36m(GraphScheduler pid=335529)[0m Input mapping shards({})
+[36m(GraphScheduler pid=335529)[0m Output names(['search_results'])
+[36m(GraphScheduler pid=335529)[0m Config({'top_k': 20}),
+[36m(GraphScheduler pid=335529)[0m ----Node(Reranking)----
+[36m(GraphScheduler pid=335529)[0m NodeType(compute)
+[36m(GraphScheduler pid=335529)[0m EngineType(reranker)
+[36m(GraphScheduler pid=335529)[0m OpType(reranking)
+[36m(GraphScheduler pid=335529)[0m Parents(['(Search, compute)', '(input_queries, input)'])
+[36m(GraphScheduler pid=335529)[0m Children(['(LLMPrefilling, compute)'])
+[36m(GraphScheduler pid=335529)[0m Depth(3)
+[36m(GraphScheduler pid=335529)[0m Input keys and types(["queries: <class 'NoneType'>, shape: None", "search_results: <class 'NoneType'>, shape: None"])
+[36m(GraphScheduler pid=335529)[0m Input key from parents({'Search': 'search_results', 'input_queries': 'queries'})
+[36m(GraphScheduler pid=335529)[0m Input mapping shards({})
+[36m(GraphScheduler pid=335529)[0m Output names(['reranked_results'])
+[36m(GraphScheduler pid=335529)[0m Config({'top_k': 2}),
+[36m(GraphScheduler pid=335529)[0m ----Node(LLMPrefilling)----
+[36m(GraphScheduler pid=335529)[0m NodeType(compute)
+[36m(GraphScheduler pid=335529)[0m EngineType(llm)
+[36m(GraphScheduler pid=335529)[0m OpType(llm_prefilling)
+[36m(GraphScheduler pid=335529)[0m Parents(['(Reranking, compute)', '(input_queries, input)'])
+[36m(GraphScheduler pid=335529)[0m Children(['(LLMDecoding, compute)'])
+[36m(GraphScheduler pid=335529)[0m Depth(2)
+[36m(GraphScheduler pid=335529)[0m Input keys and types(["queries: <class 'NoneType'>, shape: None", "reranked_results: <class 'NoneType'>, shape: None"])
+[36m(GraphScheduler pid=335529)[0m Input key from parents({'Reranking': 'reranked_results', 'input_queries': 'queries'})
+[36m(GraphScheduler pid=335529)[0m Input mapping shards({})
+[36m(GraphScheduler pid=335529)[0m Output names(['prefill_state'])
+[36m(GraphScheduler pid=335529)[0m Config({'prompt_template': '      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed\n      to enhance responses by integrating information retrieved from external documents. Your primary role\n      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly\n      adhere to the content of the retrieved documents provided to you and avoid introducing information that\n      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.\n      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.\n      If the retrieved documents do not contain relevant information, explicitly state: \'Based on the\n      available information, I cannot determine the answer.\'\n"\n      2. Response Formatting - Directly answer the question using the retrieved data. If multiple\n      sources provide information, synthesize them in a coherent manner. If no relevant information\n      is found, clearly state that.\n"\n      3. Clarity and Precision - Avoid speculative language such as \'I think\' or \'It might be.\'\n      Maintain a neutral and factual tone.\n"\n      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the\n      retrieved information concisely.\n"\n      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,\n      unverifiable claims), state: \'The retrieved documents do not provide information on this topic.\'\n\n      ---\n\n      Example Interactions:\n\n      User Question: Who founded Apple Inc.?\n\n      Retrieved Context: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      Model Answer: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      ---\n\n      User Question: When was the first iPhone released, and what were its key features?\n"\n      Retrieved Context: \'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.\' "\n      "\'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'\n"\n      Model Answer: \'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "\n      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.\n      Here is the question: {queries}?\n      Here is the retrieved context: {search_results}\n      Here is your answer, make sure it is concise:\n     ', 'parse_json': True, 'prompt': '      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed\n      to enhance responses by integrating information retrieved from external documents. Your primary role\n      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly\n      adhere to the content of the retrieved documents provided to you and avoid introducing information that\n      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.\n      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.\n      If the retrieved documents do not contain relevant information, explicitly state: \'Based on the\n      available information, I cannot determine the answer.\'\n"\n      2. Response Formatting - Directly answer the question using the retrieved data. If multiple\n      sources provide information, synthesize them in a coherent manner. If no relevant information\n      is found, clearly state that.\n"\n      3. Clarity and Precision - Avoid speculative language such as \'I think\' or \'It might be.\'\n      Maintain a neutral and factual tone.\n"\n      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the\n      retrieved information concisely.\n"\n      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,\n      unverifiable claims), state: \'The retrieved documents do not provide information on this topic.\'\n\n      ---\n\n      Example Interactions:\n\n      User Question: Who founded Apple Inc.?\n\n      Retrieved Context: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      Model Answer: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      ---\n\n      User Question: When was the first iPhone released, and what were its key features?\n"\n      Retrieved Context: \'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.\' "\n      "\'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'\n"\n      Model Answer: \'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "\n      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.\n      Here is the question: {queries}?\n      Here is the retrieved context: {search_results}\n      Here is your answer, make sure it is concise:\n     ', 'partial_output': False, 'partial_prefilling': False, 'llm_partial_decoding_idx': -1, 'llm_internal_id': '18050751-e6bb-420d-b522-a40595a72901', 'max_tokens': 10}),
+[36m(GraphScheduler pid=335529)[0m ----Node(LLMDecoding)----
+[36m(GraphScheduler pid=335529)[0m NodeType(compute)
+[36m(GraphScheduler pid=335529)[0m EngineType(llm)
+[36m(GraphScheduler pid=335529)[0m OpType(llm_decoding)
+[36m(GraphScheduler pid=335529)[0m Parents(['(LLMPrefilling, compute)'])
+[36m(GraphScheduler pid=335529)[0m Children(['(output_result, output)'])
+[36m(GraphScheduler pid=335529)[0m Depth(1)
+[36m(GraphScheduler pid=335529)[0m Input keys and types(["prefill_state: <class 'NoneType'>, shape: None"])
+[36m(GraphScheduler pid=335529)[0m Input key from parents({'LLMPrefilling': 'prefill_state'})
+[36m(GraphScheduler pid=335529)[0m Input mapping shards({})
+[36m(GraphScheduler pid=335529)[0m Output names(['result'])
+[36m(GraphScheduler pid=335529)[0m Config({'prompt_template': '      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed\n      to enhance responses by integrating information retrieved from external documents. Your primary role\n      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly\n      adhere to the content of the retrieved documents provided to you and avoid introducing information that\n      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.\n      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.\n      If the retrieved documents do not contain relevant information, explicitly state: \'Based on the\n      available information, I cannot determine the answer.\'\n"\n      2. Response Formatting - Directly answer the question using the retrieved data. If multiple\n      sources provide information, synthesize them in a coherent manner. If no relevant information\n      is found, clearly state that.\n"\n      3. Clarity and Precision - Avoid speculative language such as \'I think\' or \'It might be.\'\n      Maintain a neutral and factual tone.\n"\n      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the\n      retrieved information concisely.\n"\n      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,\n      unverifiable claims), state: \'The retrieved documents do not provide information on this topic.\'\n\n      ---\n\n      Example Interactions:\n\n      User Question: Who founded Apple Inc.?\n\n      Retrieved Context: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      Model Answer: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      ---\n\n      User Question: When was the first iPhone released, and what were its key features?\n"\n      Retrieved Context: \'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.\' "\n      "\'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'\n"\n      Model Answer: \'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "\n      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.\n      Here is the question: {queries}?\n      Here is the retrieved context: {search_results}\n      Here is your answer, make sure it is concise:\n     ', 'parse_json': True, 'prompt': '      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed\n      to enhance responses by integrating information retrieved from external documents. Your primary role\n      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly\n      adhere to the content of the retrieved documents provided to you and avoid introducing information that\n      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.\n      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.\n      If the retrieved documents do not contain relevant information, explicitly state: \'Based on the\n      available information, I cannot determine the answer.\'\n"\n      2. Response Formatting - Directly answer the question using the retrieved data. If multiple\n      sources provide information, synthesize them in a coherent manner. If no relevant information\n      is found, clearly state that.\n"\n      3. Clarity and Precision - Avoid speculative language such as \'I think\' or \'It might be.\'\n      Maintain a neutral and factual tone.\n"\n      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the\n      retrieved information concisely.\n"\n      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,\n      unverifiable claims), state: \'The retrieved documents do not provide information on this topic.\'\n\n      ---\n\n      Example Interactions:\n\n      User Question: Who founded Apple Inc.?\n\n      Retrieved Context: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      Model Answer: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      ---\n\n      User Question: When was the first iPhone released, and what were its key features?\n"\n      Retrieved Context: \'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.\' "\n      "\'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'\n"\n      Model Answer: \'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "\n      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.\n      Here is the question: {queries}?\n      Here is the retrieved context: {search_results}\n      Here is your answer, make sure it is concise:\n     ', 'partial_output': False, 'partial_prefilling': False, 'llm_partial_decoding_idx': -1, 'llm_internal_id': '18050751-e6bb-420d-b522-a40595a72901', 'max_tokens': 10})][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:31 - [32mINFO[0m - ayo - [graph_scheduler.py:76] - [32mDAG output nodes: [
+[36m(GraphScheduler pid=335529)[0m ----Node(output_result)----
+[36m(GraphScheduler pid=335529)[0m NodeType(output)
+[36m(GraphScheduler pid=335529)[0m EngineType(output)
+[36m(GraphScheduler pid=335529)[0m OpType(None)
+[36m(GraphScheduler pid=335529)[0m Parents(['(LLMDecoding, compute)'])
+[36m(GraphScheduler pid=335529)[0m Children([])
+[36m(GraphScheduler pid=335529)[0m Depth(0)
+[36m(GraphScheduler pid=335529)[0m Input keys and types([])
+[36m(GraphScheduler pid=335529)[0m Input key from parents({'LLMDecoding': 'result'})
+[36m(GraphScheduler pid=335529)[0m Input mapping shards({})
+[36m(GraphScheduler pid=335529)[0m Output names([])
+[36m(GraphScheduler pid=335529)[0m Config({})][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:31 - [32mINFO[0m - ayo - [graph_scheduler.py:147] - [32msubmit node: Embedding[0m
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Embedding
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:31 - [32mINFO[0m - ayo - [graph_scheduler.py:380] - [32mpending nodes: ['Ingestion', 'QueryEmbedding', 'Search', 'Reranking', 'LLMPrefilling', 'LLMDecoding', 'output_result'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:31 - [32mINFO[0m - ayo - [graph_scheduler.py:381] - [32mrunning nodes: ['Embedding'][0m
+[36m(EngineScheduler pid=335530)[0m 2025-07-15 20:47:31 - [32mINFO[0m - ayo - [engine_scheduler.py:288] - [32mEnqueued request: random-test-0::Embedding[0m
+[36m(EngineScheduler pid=335530)[0m 2025-07-15 20:47:31 - [32mINFO[0m - ayo - [engine_scheduler.py:291] - [32mEnqueued request: random-test-0::Embedding[0m
+[36m(EngineScheduler pid=335530)[0m 2025-07-15 20:47:31 - [32mINFO[0m - ayo - [engine_scheduler.py:209] - [32mProcessing request: random-test-0::Embedding[0m
+[36m(EngineScheduler pid=335530)[0m 2025-07-15 20:47:31 - [32mINFO[0m - ayo - [engine_scheduler.py:214] - [32msubmit request random-test-0::Embedding with payload: dict_keys(['texts'])[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:419] - [32mresult have been received for node: Embedding in graph scheduler[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:147] - [32msubmit node: Ingestion[0m
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Ingestion
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Ingestion
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Ingestion
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Ingestion
+[36m(EngineScheduler pid=335530)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [engine_scheduler.py:310] - [32mMoved request random-test-0::Embedding to complete queue[0m
+[36m(EngineScheduler pid=335530)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [engine_scheduler.py:263] - [32mSuccessfully set result for request random-test-0::Embedding[0m
+[36m(EmbeddingEngine pid=335655)[0m request_embeddings: (666, 1024)
+[36m(EngineScheduler pid=336094)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [engine_scheduler.py:214] - [32msubmit request random-test-0::Ingestion with payload: dict_keys(['request_type', 'data'])[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:380] - [32mpending nodes: ['QueryEmbedding', 'Search', 'Reranking', 'LLMPrefilling', 'LLMDecoding', 'output_result'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:381] - [32mrunning nodes: ['Ingestion'][0m
+[36m(VectorDBEngine pid=336353)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [vector_db.py:214] - [32msubmit request in vector_db: ingestion random-test-0::Ingestion random-test-0[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:419] - [32mresult have been received for node: Ingestion in graph scheduler[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:147] - [32msubmit node: QueryEmbedding[0m
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: QueryEmbedding
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: QueryEmbedding
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:380] - [32mpending nodes: ['Search', 'Reranking', 'LLMPrefilling', 'LLMDecoding', 'output_result'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:381] - [32mrunning nodes: ['QueryEmbedding'][0m
+[36m(EngineScheduler pid=335530)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [engine_scheduler.py:214] - [32msubmit request random-test-0::QueryEmbedding with payload: dict_keys(['texts'])[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:419] - [32mresult have been received for node: QueryEmbedding in graph scheduler[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:147] - [32msubmit node: Search[0m
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Search
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Search
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Search
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Search
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:380] - [32mpending nodes: ['Reranking', 'LLMPrefilling', 'LLMDecoding', 'output_result'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:381] - [32mrunning nodes: ['Search'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [graph_scheduler.py:419] - [32mresult have been received for node: Search in graph scheduler[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:147] - [32msubmit node: Reranking[0m
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Reranking
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Reranking
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Reranking
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: Reranking
+[36m(EmbeddingEngine pid=335655)[0m request_embeddings: (1, 1024)
+[36m(EngineScheduler pid=336094)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [engine_scheduler.py:214] - [32msubmit request random-test-0::Search with payload: dict_keys(['request_type', 'data'])[0m
+[36m(VectorDBEngine pid=336353)[0m 2025-07-15 20:47:32 - [32mINFO[0m - ayo - [vector_db.py:214] - [32msubmit request in vector_db: searching random-test-0::Search random-test-0[0m
+[36m(EngineScheduler pid=336567)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [engine_scheduler.py:214] - [32msubmit request random-test-0::Reranking with payload: dict_keys(['query', 'passages', 'top_k'])[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:380] - [32mpending nodes: ['LLMPrefilling', 'LLMDecoding', 'output_result'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:381] - [32mrunning nodes: ['Reranking'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:419] - [32mresult have been received for node: Reranking in graph scheduler[0m
+[36m(RerankerEngine pid=336755)[0m Reranking time for batch 0 to 20: 0.06618356704711914 seconds
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:147] - [32msubmit node: LLMPrefilling[0m
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: LLMPrefilling
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: LLMPrefilling
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: LLMPrefilling
+[36m(GraphScheduler pid=335529)[0m parent_output type: <class 'dict'> for node: LLMPrefilling
+[36m(GraphScheduler pid=335529)[0m [93mUse approximate matching: Placeholder 'search_results' is matched to input parameter 'reranked_results'[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:380] - [32mpending nodes: ['LLMDecoding', 'output_result'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:381] - [32mrunning nodes: ['LLMPrefilling'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:147] - [32msubmit node: LLMDecoding[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:380] - [32mpending nodes: ['output_result'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:381] - [32mrunning nodes: ['LLMPrefilling', 'LLMDecoding'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:419] - [32mresult have been received for node: LLMPrefilling in graph scheduler[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:380] - [32mpending nodes: ['output_result'][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [graph_scheduler.py:381] - [32mrunning nodes: ['LLMDecoding'][0m
+[36m(EngineScheduler pid=337299)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [engine_scheduler.py:214] - [32msubmit request random-test-0::LLMPrefilling with payload: dict_keys(['llm_internal_id', 'prompt', 'llm_op_type', 'llm_partial_decoding_idx', 'sampling_params'])[0m
+[36m(EngineScheduler pid=337299)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [engine_scheduler.py:214] - [32msubmit request random-test-0::LLMDecoding with payload: dict_keys(['llm_internal_id', 'prompt', 'llm_op_type', 'llm_partial_decoding_idx', 'sampling_params'])[0m
+[36m(LLMEngine pid=337552)[0m Time 07-15 20:47:33, LLM engine generate_with_stream: 18050751-e6bb-420d-b522-a40595a72901, prompt:       You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed
+[36m(LLMEngine pid=337552)[0m       to enhance responses by integrating information retrieved from external documents. Your primary role
+[36m(LLMEngine pid=337552)[0m       is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly
+[36m(LLMEngine pid=337552)[0m       adhere to the content of the retrieved documents provided to you and avoid introducing information that
+[36m(LLMEngine pid=337552)[0m       is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.
+[36m(LLMEngine pid=337552)[0m       1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.
+[36m(LLMEngine pid=337552)[0m       If the retrieved documents do not contain relevant information, explicitly state: 'Based on the
+[36m(LLMEngine pid=337552)[0m       available information, I cannot determine the answer.'
+[36m(LLMEngine pid=337552)[0m "
+[36m(LLMEngine pid=337552)[0m       2. Response Formatting - Directly answer the question using the retrieved data. If multiple
+[36m(LLMEngine pid=337552)[0m       sources provide information, synthesize them in a coherent manner. If no relevant information
+[36m(LLMEngine pid=337552)[0m       is found, clearly state that.
+[36m(LLMEngine pid=337552)[0m "
+[36m(LLMEngine pid=337552)[0m       3. Clarity and Precision - Avoid speculative language such as 'I think' or 'It might be.'
+[36m(LLMEngine pid=337552)[0m       Maintain a neutral and factual tone.
+[36m(LLMEngine pid=337552)[0m "
+[36m(LLMEngine pid=337552)[0m       4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the
+[36m(LLMEngine pid=337552)[0m       retrieved information concisely.
+[36m(LLMEngine pid=337552)[0m "
+[36m(LLMEngine pid=337552)[0m       5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,
+[36m(LLMEngine pid=337552)[0m       unverifiable claims), state: 'The retrieved documents do not provide information on this topic.'
+[36m(LLMEngine pid=337552)[0m       ---
+[36m(LLMEngine pid=337552)[0m       Example Interactions:
+[36m(LLMEngine pid=337552)[0m       User Question: Who founded Apple Inc.?
+[36m(LLMEngine pid=337552)[0m       Retrieved Context: 'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.'
+[36m(LLMEngine pid=337552)[0m       Model Answer: 'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.'
+[36m(LLMEngine pid=337552)[0m       ---
+[36m(LLMEngine pid=337552)[0m       User Question: When was the first iPhone released, and what were its key features?
+[36m(LLMEngine pid=337552)[0m "
+[36m(LLMEngine pid=337552)[0m       Retrieved Context: 'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.' "
+[36m(LLMEngine pid=337552)[0m       "'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.'
+[36m(LLMEngine pid=337552)[0m "
+[36m(LLMEngine pid=337552)[0m       Model Answer: 'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "
+[36m(LLMEngine pid=337552)[0m       "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.
+[36m(LLMEngine pid=337552)[0m       Here is the question: ['I want to know some system conferences.']?
+[36m(LLMEngine pid=337552)[0m       Here is the retrieved context: [{'passage': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.0001634359359741211}, {'passage': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.0001634359359741211}]
+[36m(LLMEngine pid=337552)[0m       Here is your answer, make sure it is concise:
+[36m(LLMEngine pid=337552)[0m      , sampling_params: SamplingParams(n=1, best_of=1, presence_penalty=0.0, frequency_penalty=0.0, repetition_penalty=1.0, temperature=0.9, top_p=0.95, top_k=-1, min_p=0.0, use_beam_search=False, length_penalty=1.0, early_stopping=False, stop=[], stop_token_ids=[], ignore_eos=False, max_tokens=10, logprobs=None, prompt_logprobs=None, skip_special_tokens=True, spaces_between_special_tokens=True, support_partial_output=False, partial_output_pattern=json, support_partial_prefilling=False)
+[36m(LLMEngine pid=337552)[0m INFO 07-15 20:47:33 async_llm_engine.py:392] Received request 18050751-e6bb-420d-b522-a40595a72901: prompt: '      You are an AI assistant specialized in Retrieval-Augmented Generation (RAG), a framework designed\n      to enhance responses by integrating information retrieved from external documents. Your primary role\n      is to provide accurate, contextually relevant, and document-based answers. Your responses must strictly\n      adhere to the content of the retrieved documents provided to you and avoid introducing information that\n      is not explicitly mentioned in those documents. This ensures transparency, factual consistency, and reliability in your outputs.\n      1. Use Retrieved Information Only - Your responses must rely solely on the retrieved documents.\n      If the retrieved documents do not contain relevant information, explicitly state: \'Based on the\n      available information, I cannot determine the answer.\'\n"\n      2. Response Formatting - Directly answer the question using the retrieved data. If multiple\n      sources provide information, synthesize them in a coherent manner. If no relevant information\n      is found, clearly state that.\n"\n      3. Clarity and Precision - Avoid speculative language such as \'I think\' or \'It might be.\'\n      Maintain a neutral and factual tone.\n"\n      4. Information Transparency - Do not fabricate facts or sources. If needed, summarize the\n      retrieved information concisely.\n"\n      5. Handling Out-of-Scope Queries - If a question is outside the retrieved data (e.g., opinions,\n      unverifiable claims), state: \'The retrieved documents do not provide information on this topic.\'\n\n      ---\n\n      Example Interactions:\n\n      User Question: Who founded Apple Inc.?\n\n      Retrieved Context: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      Model Answer: \'Apple Inc. was co-founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.\'\n\n      ---\n\n      User Question: When was the first iPhone released, and what were its key features?\n"\n      Retrieved Context: \'The first iPhone was announced by Steve Jobs on January 9, 2007, and released on June 29, 2007.\' "\n      "\'The original iPhone featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'\n"\n      Model Answer: \'The first iPhone was announced on January 9, 2007, and released on June 29, 2007. "\n      "It featured a 3.5-inch touchscreen display, a 2-megapixel camera, and ran on iOS.\'      This ensures accuracy, reliability, and transparency in all responses. And you should directly answer the question based on the retrieved context and keep it concise as possible.\n      Here is the question: [\'I want to know some system conferences.\']?\n      Here is the retrieved context: [{\'passage\': \'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...\', \'score\': 0.0001634359359741211}, {\'passage\': \'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...\', \'score\': 0.0001634359359741211}]\n      Here is your answer, make sure it is concise:\n     ', sampling params: SamplingParams(n=1, best_of=1, presence_penalty=0.0, frequency_penalty=0.0, repetition_penalty=1.0, temperature=0.9, top_p=0.95, top_k=-1, min_p=0.0, use_beam_search=False, length_penalty=1.0, early_stopping=False, stop=[], stop_token_ids=[], ignore_eos=False, max_tokens=10, logprobs=None, prompt_logprobs=None, skip_special_tokens=True, spaces_between_special_tokens=True, support_partial_output=False, partial_output_pattern=json, support_partial_prefilling=False), prompt token ids: None.
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m b_start_loc: tensor([  0, 898], device='cuda:0')
+[36m(LLMEngine pid=337552)[0m b_seq_len: tensor([898], device='cuda:0', dtype=torch.int32)
+[36m(LLMEngine pid=337552)[0m prompt_lens: [898]
+[36m(LLMEngine pid=337552)[0m query length: 898
+[36m(LLMEngine pid=337552)[0m INFO 07-15 20:47:34 llm_engine.py:797] Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 1 reqs, Swapped: 0 reqs, Pending: 0 reqs, GPU KV cache usage: 5.5%, CPU KV cache usage: 0.0%
+2025-07-15 20:47:34 - [32mINFO[0m - ayo - [app.py:312] - [32mQuery completed successfully: query_id=random-test-0, duration=3.502s[0m
+query_task.query.results: {}
+2025-07-15 20:47:34 - [32mINFO[0m - ayo - [app.py:337] - [32mQuery removed from active list: query_id=random-test-0[0m
+
+Query 0 results: {'Embedding': array([[ 0.0287   ,  0.015    ,  0.0254   , ...,  0.00512  , -0.02377  ,
+        -0.002687 ],
+       [ 0.01324  ,  0.03062  ,  0.00975  , ...,  0.05142  , -0.02658  ,
+         0.01401  ],
+       [ 0.0182   , -0.02757  , -0.01608  , ...,  0.00387  , -0.03836  ,
+        -0.01726  ],
+       ...,
+       [ 0.02142  ,  0.0002525, -0.02747  , ...,  0.006107 ,  0.0593   ,
+        -0.04022  ],
+       [ 0.0091   ,  0.00503  , -0.02931  , ..., -0.004913 ,  0.02539  ,
+        -0.01746  ],
+       [ 0.00785  , -0.01764  , -0.01084  , ..., -0.01675  , -0.000715 ,
+         0.014366 ]], dtype=float16), 'Ingestion': True, 'QueryEmbedding': array([[ 0.007034, -0.02112 , -0.01012 , ..., -0.02483 ,  0.00528 ,
+        -0.003546]], dtype=float16), 'Search': [{'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}, {'text': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.4940516794552754}], 'Reranking': [{'passage': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.0001634359359741211}, {'passage': 'I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...I have a question about machine ...', 'score': 0.0001634359359741211}], 'LLMPrefilling': True, 'LLMDecoding': ' Based on the retrieved information, I cannot determine the'}
+Search results length: 20
+Reranking results length: 2
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:34 - [32mINFO[0m - ayo - [graph_scheduler.py:419] - [32mresult have been received for node: LLMDecoding in graph scheduler[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:34 - [32mINFO[0m - ayo - [graph_scheduler.py:147] - [32msubmit node: output_result[0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:34 - [32mINFO[0m - ayo - [graph_scheduler.py:380] - [32mpending nodes: [][0m
+[36m(GraphScheduler pid=335529)[0m 2025-07-15 20:47:34 - [32mINFO[0m - ayo - [graph_scheduler.py:381] - [32mrunning nodes: ['output_result'][0m
+[36m(LLMEngine pid=337552)[0m INFO 07-15 20:47:34 async_llm_engine.py:111] Finished request 18050751-e6bb-420d-b522-a40595a72901.
+[36m(LLMEngine pid=337552)[0m Result for decoding request random-test-0::LLMDecoding:  Based on the retrieved information, I cannot determine the
+[36m(LLMEngine pid=337552)[0m [32m [repeated 7x across cluster] (Ray deduplicates logs by default. Set RAY_DEDUP_LOGS=0 to disable log deduplication, or see https://docs.ray.io/en/master/ray-observability/ray-logging.html#log-deduplication for more options.)[0m
+[36m(EngineScheduler pid=337299)[0m 2025-07-15 20:47:33 - [32mINFO[0m - ayo - [engine_scheduler.py:209] - [32mProcessing request: random-test-0::LLMDecoding[0m[32m [repeated 18x across cluster][0m
+[36m(EngineScheduler pid=337299)[0m 2025-07-15 20:47:34 - [32mINFO[0m - ayo - [engine_scheduler.py:310] - [32mMoved request random-test-0::LLMDecoding to complete queue[0m[32m [repeated 6x across cluster][0m
+[36m(EngineScheduler pid=337299)[0m 2025-07-15 20:47:34 - [32mINFO[0m - ayo - [engine_scheduler.py:263] - [32mSuccessfully set result for request random-test-0::LLMDecoding[0m[32m [repeated 6x across cluster][0m
