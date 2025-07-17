@@ -301,6 +301,7 @@ class LLMEngine:
                 # The first request is responsible for generating
                 if is_first_request:
                     first_partial_result = None
+                    result_sent_to_scheduler = False
                     try:
                         async for result in result_generator:
                             if result.outputs[0].partial_outputs:
@@ -312,7 +313,15 @@ class LLMEngine:
                                     len(result.outputs[0].partial_outputs)
                                     > partial_decode_idx
                                 ):
-                                    if self.scheduler_ref is not None:
+                                    if (
+                                        self.scheduler_ref is not None
+                                        and result_sent_to_scheduler is False
+                                    ):
+                                        # Note: Here we need the result_sent_to_scheduler to avoid sending the same result from first-partial-decoding to the scheduler multiple times,
+                                        # since the coroutine handling the first partial decoding is also responsible for asynchronously iterating through the full sequence of subsequent decodings.
+                                        logger.debug(
+                                            f"send first partial result to scheduler: {result.outputs[0].partial_outputs[partial_decode_idx]}"
+                                        )
                                         await self.scheduler_ref.on_result.remote(
                                             request.request_id,
                                             request.query_id,
@@ -320,6 +329,7 @@ class LLMEngine:
                                                 partial_decode_idx
                                             ],
                                         )
+                                        result_sent_to_scheduler = True
 
                                     if first_partial_result is None:
                                         first_partial_result = result.outputs[

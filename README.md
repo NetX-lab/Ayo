@@ -204,7 +204,7 @@ Some examples are in the `examples` folder.
 
 The testbed is a server with 4x NVIDIA 3090 GPUs and 52 cores Intel(R) Xeon(R) Gold 5320 CPU.
 
-For instance, in file `examples/optimized_embedding_ingestion_searching_reranking_llm.py`, we provide the optimized workflow for the naive RAG workflow with Ayo and the unoptimized workflow is in file `examples/unoptimized_embedding_ingestion_searching_reranking_llm.py`.
+For example0, in file `examples/optimized_embedding_ingestion_searching_reranking_llm.py`, we provide the optimized workflow for the naive RAG workflow with Ayo and the unoptimized workflow is in file `examples/unoptimized_embedding_ingestion_searching_reranking_llm.py`.
 
 We could see the visualization comparison of the unoptimized (left) and optimized (right) workflow under the same folder.
 
@@ -219,6 +219,24 @@ The execution latency is:
 |---------------|---------|
 | Unoptimized     | 3.72s  |
 | Optimized   | 1.97s  |
+
+
+For example1, in file `examples/optimized_embedding_ingestion_rewriting_searching_reranking_llm.py`, we provide the optimized workflow for the advanced RAG workflow with Ayo and the unoptimized workflow is in file `examples/unoptimized_embedding_ingestion_rewriting_searching_reranking_llm.py`.
+
+We could see the visualization comparison of the unoptimized (left) and optimized (right) workflow under the same folder.
+
+<div style="display: flex; justify-content: space-between; gap: 1rem;">
+  <img src="./examples/unoptimized_dag_for_embedding_ingestion_rewriting_search_reranking_llm.png" width="40%" alt="unoptimized workflow" />
+  <img src="./examples/optimized_dag_for_embedding_ingestion_rewriting_searching_reranking_llm.png"  width="54%" alt="optimized workflow" />
+</div>
+
+The execution latency is:
+
+| Workflow Type | Latency |
+|---------------|---------|
+| Unoptimized     | 7.40s  |
+| Optimized   | 3.17s  |
+
 
 
 ## To-Do List

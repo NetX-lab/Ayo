@@ -60,13 +60,11 @@ def get_aggregator_config(node: Node, **kwargs) -> Dict:
     elif node.parents[0].op_type == NodeOps.RERANKING:
 
         agg_config = {"agg_mode": AggMode.TOP_K}
-        agg_config.update(
-            {
-                node.config.get("topk", {})
-                or node.config.get("top_k", {})
-                or node.config.get("k", {})
-                or 5
-            }
+        agg_config["top_k"] = (
+            node.config.get("topk", None)
+            or node.config.get("top_k", None)
+            or node.config.get("k", None)
+            or 5
         )
         return agg_config
     elif node.parents[0].op_type == NodeOps.VECTORDB_INGESTION:
@@ -81,7 +79,14 @@ def get_aggregator_config_for_parent_node(node: Node, **kwargs) -> Dict:
     elif node.op_type == NodeOps.VECTORDB_SEARCHING:
         return {"agg_mode": AggMode.MERGE}
     elif node.op_type == NodeOps.RERANKING:
-        return {"agg_mode": AggMode.TOP_K}
+        agg_config = {"agg_mode": AggMode.TOP_K}
+        agg_config["top_k"] = (
+            node.config.get("topk", None)
+            or node.config.get("top_k", None)
+            or node.config.get("k", None)
+            or 5
+        )
+        return agg_config
     elif node.op_type == NodeOps.VECTORDB_INGESTION:
         return {"agg_mode": AggMode.DUMMY}
     else:

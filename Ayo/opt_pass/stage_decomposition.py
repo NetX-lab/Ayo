@@ -298,6 +298,7 @@ class StageDecompositionPass(OPT_Pass):
                 for i in range(num_sub_nodes):
 
                     io_schema = copy.deepcopy(child.io_schema)
+                    config = copy.deepcopy(child.config)
 
                     logger.debug(f"io_schema: {io_schema} for {child.name}")
                     io_schema.output_format = {
@@ -312,6 +313,7 @@ class StageDecompositionPass(OPT_Pass):
                         node_type=child.node_type,
                         # the output should be have a suffix of "_sub_{i}"
                         io_schema=io_schema,
+                        config=config,
                     )
 
                     sub_node_for_child.decomposed = True
@@ -353,6 +355,10 @@ class StageDecompositionPass(OPT_Pass):
                 # Create the aggregator node
                 agg_config = get_aggregator_config_for_parent_node(child)
 
+                logger.debug(
+                    f"agg config in stage decomposition: {agg_config} for node {child.name}"
+                )
+
                 agg_node = Node(
                     op_type=NodeOps.AGGREGATOR,
                     name=f"{child.name}-aggregator",
@@ -385,6 +391,7 @@ class StageDecompositionPass(OPT_Pass):
                 for i in range(num_sub_nodes):
 
                     io_schema = copy.deepcopy(child.io_schema)
+                    config = copy.deepcopy(child.config)
 
                     logger.debug(f"io_schema: {io_schema} for {child.name}")
 
@@ -394,6 +401,7 @@ class StageDecompositionPass(OPT_Pass):
                         engine_type=child.engine_type,
                         node_type=child.node_type,
                         io_schema=io_schema,
+                        config=config,
                     )
 
                     sub_nodes_for_child.append(sub_node_for_child)
@@ -496,7 +504,7 @@ if __name__ == "__main__":
             output_format={"reranked_results": List[str]},
         ),
         anno=NodeAnnotation.BATCHABLE,
-        config={},
+        config={"top_k": 2},
     )
 
     embedding_node >> search_node >> reranking_node

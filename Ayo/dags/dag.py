@@ -78,6 +78,10 @@ class DAG:
         self.nodes.clear()
         self.nodes.extend(nodes)
 
+    def set_dag_id(self, dag_id: str) -> None:
+        """set DAG's unique identifier"""
+        self.id = dag_id
+
     def register_nodes(self, *nodes: Node) -> None:
         """Register nodes to the DAG"""
 

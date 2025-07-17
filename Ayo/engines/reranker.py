@@ -173,7 +173,7 @@ class RerankerEngine:
                                 batch_size=self.max_batch_size,
                             )
                             end_time = time.time()
-                            print(
+                            logger.debug(
                                 f"Reranking time for batch {i} to {i + max_batch_size}: {end_time - begin_time} seconds"
                             )
                             all_scores.extend(scores.tolist())

@@ -1,7 +1,7 @@
 import re
 
 QUERY_EXPANDING_PROMPT_TEMPLATE_STRING = """\
-        Please rewrite the following question into {refine_question_number} more refined one. \
+        You are an AI assistant specialized in query rewriting. Please rewrite the following question into {refine_question_number} more refined one. \
         You should keep the original meaning of the question, but make it more suitable and clear for context retrieval. \
         The original question is: {question}? \
         Please output your answer in json format. \
@@ -12,7 +12,7 @@ QUERY_EXPANDING_PROMPT_TEMPLATE_STRING = """\
             "revised question2": "[refined question 2]",\
             "revised question3": "[refined question 3]"\
         }}\
-        You just need to output the json string, do not output any other information or additional text!!! \
+        You just need to generate the json string, do not output any other information or additional text!!! \
         The json output:"""
 
 RAG_QUESTION_ANSWERING_PROMPT_TEMPLATE_STRING = """\

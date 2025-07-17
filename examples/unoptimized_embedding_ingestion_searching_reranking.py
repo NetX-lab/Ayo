@@ -310,7 +310,7 @@ if __name__ == "__main__":
     dag = create_base_dag()
 
     visualize_dag_with_node_types(
-        dag, "unoptimized_embedding_ingestion_search_reranking.png"
+        dag, "unoptimized_embedding_ingestion_searching_reranking.png"
     )
 
     asyncio.run(run_app(dag))

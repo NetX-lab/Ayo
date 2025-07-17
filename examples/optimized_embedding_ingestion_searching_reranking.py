@@ -318,7 +318,7 @@ if __name__ == "__main__":
     print(dag.get_full_dag_nodes_info())
 
     visualize_dag_with_node_types(
-        dag, "before_optimize_embedd_ingest_search_reranking.png"
+        dag, "before_optimize_embedding_ingestion_searching_reranking.png"
     )
 
     # optimize DAG
@@ -330,6 +330,8 @@ if __name__ == "__main__":
     # print the optimized DAG
     print(dag.get_full_dag_nodes_info())
 
-    visualize_dag_with_node_types(dag, "optimize_embedd_ingest_search_reranking.png")
+    visualize_dag_with_node_types(
+        dag, "optimized_embedding_ingestion_searching_reranking.png"
+    )
 
     asyncio.run(run_app(dag))

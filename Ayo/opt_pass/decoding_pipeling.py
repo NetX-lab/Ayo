@@ -2,6 +2,7 @@ import uuid
 from copy import deepcopy
 from typing import Any, List, Set
 
+from Ayo.configs.model_config import get_aggregator_config_for_parent_node
 from Ayo.dags.dag import DAG
 from Ayo.dags.node import Node
 from Ayo.dags.node_commons import NodeAnnotation, NodeIOSchema, NodeOps, NodeType
@@ -223,6 +224,8 @@ class LLMDecodingPipeliningPass(OPT_Pass):
 
                     # The child node is batchable but not splittable, add the aggregator node
                     agg_io_schema = deepcopy(current_node.io_schema)
+
+                    agg_config = get_aggregator_config_for_parent_node(current_node)
                     input_format = {}
                     for i in range(num_sub_nodes):
                         for k, v in current_node.io_schema.output_format.items():
@@ -236,6 +239,7 @@ class LLMDecodingPipeliningPass(OPT_Pass):
                         op_type=NodeOps.AGGREGATOR,
                         io_schema=agg_io_schema,
                         anno=NodeAnnotation.NONE,
+                        config=agg_config,
                     )
                     dag.add_node(agg_node)
 

@@ -254,7 +254,9 @@ if __name__ == "__main__":
 
     print(dag.get_full_dag_nodes_info())
 
-    visualize_dag_with_node_types(dag, "before_optimize_embedd_ingest_search.png")
+    visualize_dag_with_node_types(
+        dag, "before_optimize_embedding_ingestion_searching.png"
+    )
 
     # optimize the dag
     from Ayo.opt_pass.pruning_dependency import PruningDependencyPass
@@ -265,6 +267,6 @@ if __name__ == "__main__":
     # print the dag
     print(dag.get_full_dag_nodes_info())
 
-    visualize_dag_with_node_types(dag, "optimize_embedd_ingest_search.png")
+    visualize_dag_with_node_types(dag, "optimized_embedding_ingestion_searching.png")
 
     asyncio.run(run_app(dag))

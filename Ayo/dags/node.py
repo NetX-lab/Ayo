@@ -260,13 +260,16 @@ class Node:
         """Update input parameters from parent nodes' outputs"""
         if self.node_type == NodeType.COMPUTE:
             # validate and convert the inputs according to the schema
+            logger.debug(
+                f"node {self.name} input_kwargs before update: {self.input_kwargs}; io schema: {self.io_schema}"
+            )
             for input_name, input_type in self.io_schema.input_format.items():
                 if self.input_kwargs[input_name] is None:
                     for parent in self.parents:
                         if parent.name in nodes_outputs:
                             parent_output = nodes_outputs[parent.name]
-                            print(
-                                f"parent_output type: {type(parent_output)} for node: {self.name}"
+                            logger.debug(
+                                f"parent_output for update_input_kwargs: {type(parent_output)} for node: {self.name}"
                             )
                             if input_name in parent_output:
                                 if (

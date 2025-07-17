@@ -1,3 +1,5 @@
+import json
+import re
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Dict, Tuple
@@ -23,6 +25,21 @@ class RequestType(str, Enum):
 
     INGESTION = "ingestion"  # Insert vectors and texts
     SEARCHING = "searching"  # Search for similar vectors
+
+
+def extract_json_values(s: str):
+    match = re.search(r"(\{\{.*\}\})", s)
+    if not match:
+        return []
+    json_str = match.group(1)
+    if json_str.startswith("{{") and json_str.endswith("}}"):
+        json_str = json_str[1:-1]
+    try:
+        data = json.loads(json_str)
+        return list(data.values())
+    except Exception as e:
+        print("JSON parsing failed:", e)
+        return []
 
 
 class PayloadTransformer(ABC):
@@ -136,6 +153,9 @@ class VectorDBTransformer(PayloadTransformer):
                     "query_embedding",
                     "query_embeddings",
                     "queries_embeddings",
+                    "expanded_query_embedding",
+                    "expanded_queries_embeddings",
+                    "expanding_queries_embedding",
                     "embeddings",
                     "embedding",
                     "query_vector_list",
@@ -148,6 +168,8 @@ class VectorDBTransformer(PayloadTransformer):
                     break
 
             top_k = node.config.get("top_k", None)
+
+            print(f"query_vectors: {query_vectors} type: {type(query_vectors)}")
 
             # Ensure query_vector is a list of numpy arrays
             if isinstance(query_vectors, list):
@@ -178,7 +200,7 @@ class VectorDBTransformer(PayloadTransformer):
 
                 else:
                     raise ValueError(
-                        f"Invalid query_vector format: expected list of lists or numpy arrays for node {node.name} vector db searching"
+                        f"Invalid query_vector format: expected list of lists or numpy arrays for node {node.name} vector db searching, got {type(query_vectors)}"
                     )
 
             elif isinstance(query_vectors, np.ndarray):
@@ -220,11 +242,33 @@ class VectorDBTransformer(PayloadTransformer):
 class EmbedderTransformer(PayloadTransformer):
     def transform(self, node: "Node") -> Dict:
         texts = []
-        for value in node.input_kwargs.values():
-            if isinstance(value, (list, tuple)):
-                texts.extend(str(item) for item in value)
-            else:
-                texts.append(str(value))
+        # a workaround for the case the input from a queryexpanding LLMdecoding
+        # TODO: Take a more general approach to handle the case
+        if (
+            node.parents[0].op_type == NodeOps.LLM_DECODING
+            and node.parents[0].config.get("expanded_query_num", 0) > 0
+            and node.parents[0].config.get("parse_json", False) is True
+        ):
+            for key, value in node.input_kwargs.items():
+                if isinstance(value, str):
+                    logger.debug(
+                        f"Transform the input for embedder from LLM query expanding decoding, try to parse a json str into list of strings: value before extract_json_values: {value}"
+                    )
+                    extracted_values = extract_json_values(value)
+                    logger.debug(
+                        f"Transform the input for embedder from LLM query expanding decoding, extracted_values: {extracted_values}"
+                    )
+                    texts.extend(extracted_values)
+
+        else:
+            for value in node.input_kwargs.values():
+                if isinstance(value, (list, tuple)):
+                    texts.extend(str(item) for item in value)
+                else:
+                    texts.append(str(value))
+
+        logger.debug(f"Transform the input for embedder, texts: {texts}")
+
         return {"texts": texts}
 
 
@@ -462,8 +506,10 @@ class LLMTransformer(PayloadTransformer):
             else:
                 if potential_prompt_template is not None:
                     # we should fill the prompt template with the input_kwargs
+                    input_kwargs = node.input_kwargs
+                    input_kwargs.update(node.config)
                     prompt = fill_prompt_template_with_placeholdersname_approximations(
-                        potential_prompt_template, node.input_kwargs
+                        potential_prompt_template, input_kwargs
                     )
 
                     # first find the placeholders in the prompt template

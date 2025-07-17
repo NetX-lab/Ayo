@@ -429,9 +429,10 @@ if __name__ == "__main__":
     # print the optimized DAG
     print(dag.get_full_dag_nodes_info())
 
+    dag.set_dag_id("optimized_dag_for_embedding_ingestion_searching_reranking_llm")
+
     visualize_dag_with_node_types(
         dag, "optimized_dag_for_embedding_ingestion_searching_reranking_llm.png"
     )
 
-    # exit()
     asyncio.run(run_app(dag))

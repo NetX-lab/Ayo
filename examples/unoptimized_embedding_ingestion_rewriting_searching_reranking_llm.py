@@ -93,7 +93,9 @@ reranker_config = EngineConfig(
 
 def create_base_dag():
     """Create basic DAG"""
-    base_dag = DAG(dag_id="unoptimized_embedding_ingestion_searching_reranking_llm")
+    base_dag = DAG(
+        dag_id="unoptimized_embedding_ingestion_rewriting_searching_reranking_llm"
+    )
 
     # Create embedding node
     passages_embedding_node = Node(
@@ -125,13 +127,82 @@ def create_base_dag():
         config={},
     )
 
+    from Ayo.modules.prompt_template import (
+        QUERY_EXPANDING_PROMPT_TEMPLATE_STRING,
+        RAG_QUESTION_ANSWERING_PROMPT_TEMPLATE_STRING,
+    )
+
+    llm_internal_id_0 = str(uuid.uuid4())
+
+    expanded_query_prefilling_node = Node(
+        name="ExpandedQueryPrefilling",
+        node_type=NodeType.COMPUTE,
+        engine_type=EngineType.LLM,
+        op_type=NodeOps.LLM_PREFILLING,
+        io_schema=NodeIOSchema(
+            input_format={"queries": str}, output_format={"prefilled": bool}
+        ),
+        anno=NodeAnnotation.BATCHABLE,
+        config={
+            "prompt_template": replace_placeholders(
+                QUERY_EXPANDING_PROMPT_TEMPLATE_STRING,
+                refine_question_number="expanded_query_num",
+                question="queries",
+            ),
+            "parse_json": True,
+            "prompt": replace_placeholders(
+                QUERY_EXPANDING_PROMPT_TEMPLATE_STRING,
+                refine_question_number="expanded_query_num",
+                question="queries",
+            ),
+            "expanded_query_num": 3,
+            "partial_output": False,
+            "partial_prefilling": False,
+            "llm_internal_id": llm_internal_id_0,
+            "max_tokens": 200,
+        },
+    )
+
+    expanded_query_llm_decoding_node = Node(
+        name="ExpandedQueryLLMDecoding",
+        node_type=NodeType.COMPUTE,
+        engine_type=EngineType.LLM,
+        op_type=NodeOps.LLM_DECODING,
+        io_schema=NodeIOSchema(
+            input_format={
+                "prefilled": bool,
+            },
+            output_format={"expanded_queries": List[str]},
+        ),
+        anno=NodeAnnotation.BATCHABLE,
+        config={
+            "prompt_template": replace_placeholders(
+                QUERY_EXPANDING_PROMPT_TEMPLATE_STRING,
+                refine_question_number="expanded_query_num",
+                question="queries",
+            ),
+            "prompt": replace_placeholders(
+                QUERY_EXPANDING_PROMPT_TEMPLATE_STRING,
+                refine_question_number="expanded_query_num",
+                question="queries",
+            ),
+            "parse_json": True,
+            "expanded_query_num": 3,
+            "partial_output": False,
+            "partial_prefilling": False,
+            "llm_partial_decoding_idx": -1,
+            "llm_internal_id": llm_internal_id_0,
+            "max_tokens": 200,
+        },
+    )
+
     query_embedding_node = Node(
         name="QueryEmbedding",
         node_type=NodeType.COMPUTE,
         engine_type=EngineType.EMBEDDER,
         io_schema=NodeIOSchema(
-            input_format={"queries": List[str]},
-            output_format={"queries_embeddings": List[List[float]]},
+            input_format={"expanded_queries": List[str]},
+            output_format={"expanded_queries_embeddings": List[List[float]]},
         ),
         op_type=NodeOps.EMBEDDING,
         anno=NodeAnnotation.BATCHABLE,
@@ -145,7 +216,7 @@ def create_base_dag():
         engine_type=EngineType.VECTOR_DB,
         io_schema=NodeIOSchema(
             input_format={
-                "queries_embeddings": List[List[float]],
+                "expanded_queries_embeddings": List[List[float]],
                 "index_status": bool,
             },
             output_format={"search_results": List[List[str]]},
@@ -174,11 +245,7 @@ def create_base_dag():
         config={"top_k": 2},  # The number of results to return
     )
 
-    llm_internal_id = str(uuid.uuid4())
-
-    from Ayo.modules.prompt_template import (
-        RAG_QUESTION_ANSWERING_PROMPT_TEMPLATE_STRING,
-    )
+    llm_internal_id_1 = str(uuid.uuid4())
 
     llm_prefilling_node = Node(
         name="LLMPrefilling",
@@ -205,7 +272,7 @@ def create_base_dag():
             "partial_output": False,
             "partial_prefilling": False,
             "llm_partial_decoding_idx": -1,
-            "llm_internal_id": llm_internal_id,
+            "llm_internal_id": llm_internal_id_1,
             "max_tokens": 10,
         },
     )
@@ -234,7 +301,7 @@ def create_base_dag():
             "partial_output": False,
             "partial_prefilling": False,
             "llm_partial_decoding_idx": -1,
-            "llm_internal_id": llm_internal_id,
+            "llm_internal_id": llm_internal_id_1,
             "max_tokens": 10,
         },
     )
@@ -270,6 +337,8 @@ def create_base_dag():
     (
         passages_embedding_node
         >> ingestion_node
+        >> expanded_query_prefilling_node
+        >> expanded_query_llm_decoding_node
         >> query_embedding_node
         >> search_node
         >> reranking_node
@@ -280,6 +349,8 @@ def create_base_dag():
     base_dag.register_nodes(
         passages_embedding_node,
         ingestion_node,
+        expanded_query_prefilling_node,
+        expanded_query_llm_decoding_node,
         query_embedding_node,
         search_node,
         reranking_node,
@@ -408,6 +479,8 @@ if __name__ == "__main__":
     print(dag.get_full_dag_nodes_info())
 
     visualize_dag_with_compute_nodes_in_line(
-        dag, "unoptimized_dag_for_embedding_ingestion_search_reranking_llm.png"
+        dag,
+        "unoptimized_dag_for_embedding_ingestion_rewriting_search_reranking_llm.png",
     )
+
     asyncio.run(run_app(dag))

@@ -163,6 +163,8 @@ class QueryRunner:
                 # we do the in-place aggregation here, do not need to submit to the aggregator engine which would be discarded later
                 aggregator_mode = get_aggregator_config(node)["agg_mode"]
 
+                print(f"aggregatore node {node}, agg mode {aggregator_mode}")
+
                 if aggregator_mode == AggMode.DUMMY:
                     node.status = NodeStatus.COMPLETED
                     self.nodes_outputs[node.name] = {k: True for k in node.output_names}
@@ -204,6 +206,10 @@ class QueryRunner:
                     # if is tuple, ("xxx", 0.9)
                     node.status = NodeStatus.COMPLETED
                     node.update_input_kwargs(self.nodes_outputs)
+
+                    logger.debug(
+                        f"aggregator: {node.name} input_kwargs: {node.input_kwargs}"
+                    )
                     top_k = node.config.get("top_k", None)
                     if top_k is None:
                         raise ValueError(
@@ -214,11 +220,19 @@ class QueryRunner:
                         if isinstance(v, list):
                             if isinstance(v[0], dict):
                                 keys = v[0].keys()
-                                for i, key in enumerate(keys):
-                                    if key == "score":
-                                        score_key = i
-                                        text_key = 1 - i
-                                        break
+                                if "score" not in keys:
+                                    raise ValueError(
+                                        f"Dict keys do not contain 'score': {keys}"
+                                    )
+                                score_key = "score"
+                                # Assume there is only one non-"score" field is the text
+                                text_keys = [key for key in keys if key != "score"]
+                                if not text_keys:
+                                    raise ValueError(
+                                        f"No text key found in dict: {keys}"
+                                    )
+                                text_key = text_keys[0]
+
                                 output.extend(
                                     (v[i][text_key], v[i][score_key])
                                     for i in range(len(v))
@@ -249,7 +263,7 @@ class QueryRunner:
                     output = [x[0] for x in output]
                     self.nodes_outputs[node.name] = output
                     logger.info(
-                        f"top {top_k} aggregation output for node: {node.name}", output
+                        f"top {top_k} aggregation output for node: {node.name} output: {output}"
                     )
                     await self.query.query_state.set_node_result.remote(
                         node.name, self.nodes_outputs[node.name]
