@@ -11,11 +11,14 @@ env/
 *$py.class
 *.so
 .Python
+asserts/
 build/
 develop-eggs/
 dist/
+docs/
 downloads/
 eggs/
+tests/
 .eggs/
 lib/
 lib64/
@@ -31,3 +34,6 @@ wheels/
 */profiles
 */ray_worker
 .mypy_cache/
+
+pytest.ini
+*.png

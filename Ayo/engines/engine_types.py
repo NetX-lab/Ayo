@@ -32,7 +32,7 @@ class EngineType(str, Enum):
 class EngineSpec:
     """Engine specifications"""
 
-    engine_class: Any  # 使用Any代替具体类型
+    engine_class: Any
     default_config: Dict
     description: str
 
