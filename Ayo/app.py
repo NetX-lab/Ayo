@@ -1,4 +1,6 @@
 import asyncio
+import json
+import os
 from asyncio import Future, Lock
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
@@ -46,6 +48,7 @@ class APP:
         self.workflow_template: Dict[str, Node] = {}
         self.graph_scheduler = None
         self.pass_manager = PassManager()
+        self.scheduler_config: Dict[str, Any] = {}
 
         # Online serving configurations
         self.max_concurrent_queries = 100
@@ -82,8 +85,19 @@ class APP:
         if not ray.is_initialized():
             ray.init()
         app = cls()
+        enable_env_cfg = os.getenv("AYO_ENABLE_SCHEDULER_CONFIG", "0") == "1"
+        if enable_env_cfg:
+            env_cfg = os.getenv("AYO_SCHEDULER_CONFIG")
+            if env_cfg:
+                try:
+                    app.set_scheduler_config(json.loads(env_cfg))
+                except Exception:
+                    logger.warning("Invalid AYO_SCHEDULER_CONFIG ignored.")
         app.graph_scheduler = GraphScheduler.remote({})
         return app
+
+    def set_scheduler_config(self, config: Optional[Dict[str, Any]] = None) -> None:
+        self.scheduler_config = config or {}
 
     def register_engine(self, config: EngineConfig) -> None:
         """Register an execution engine with proper configuration"""
@@ -129,7 +143,9 @@ class APP:
 
             # Create the scheduler with the merged config
             scheduler_actor = EngineScheduler.remote(
-                engine_class=engine_cls, engine_config=engine_config
+                engine_class=engine_cls,
+                engine_config=engine_config,
+                scheduler_config=self.scheduler_config,
             )
 
             # wait for the scheduler to be fully initialized

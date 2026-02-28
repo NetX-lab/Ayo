@@ -27,3 +27,4 @@ class AppConfig:
     engines: Dict[str, EngineConfig]
     optimization_passes: List[str] = None
     workflow_template: Dict[str, Any] = None
+    scheduler_config: Optional[Dict[str, Any]] = None

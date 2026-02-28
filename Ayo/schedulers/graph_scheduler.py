@@ -1,4 +1,5 @@
 import asyncio
+import time
 import traceback
 from collections import deque
 from queue import Queue
@@ -290,6 +291,10 @@ class QueryRunner:
                     query_id=self.query.query_id,
                     query=self.query,
                     payload=payload,
+                    node_name=node.name,
+                    node_depth=node.depth,
+                    op_type=node.op_type,
+                    arrival_ts=time.time(),
                 )
 
                 await scheduler.submit_request.remote(engine_request)
@@ -490,6 +495,20 @@ class GraphScheduler:
         if query_id in self.query_runners:
             runner = self.query_runners[query_id]
             await runner.cleanup_runtime_context()
+        cleanup_tasks = []
+        for scheduler in self.engine_schedulers.values():
+            cleanup_method = getattr(scheduler, "cleanup_query", None)
+            if cleanup_method is None:
+                continue
+            cleanup_tasks.append(cleanup_method.remote(query_id))
+
+        if cleanup_tasks:
+            results = await asyncio.gather(*cleanup_tasks, return_exceptions=True)
+            for result in results:
+                if isinstance(result, Exception):
+                    logger.warning(
+                        f"Engine cleanup_query failed for query {query_id}: {result}"
+                    )
 
     async def shutdown(self):
         """Shutdown the graph scheduler"""

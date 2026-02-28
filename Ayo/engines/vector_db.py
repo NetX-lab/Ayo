@@ -1,7 +1,7 @@
 import asyncio
 import hashlib
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -33,7 +33,7 @@ class VectorDBRequest:
         List[Tuple[Union[np.ndarray, list], str]], Tuple[Union[np.ndarray, list], int]
     ]  # (embeddings, texts) for ingestion or (query_vector, top_k) for searching
     callback_ref: Any  # Ray ObjectRef for result
-    timestamp: float = time.time()
+    timestamp: float = field(default_factory=time.time)
 
 
 @ray.remote
@@ -88,28 +88,78 @@ class VectorDBEngine:
         # Start processing tasks
         self.running = True
         self.tasks = []
-        asyncio.create_task(self._initialize())
+        self._initialized = False
+        self._init_error: Optional[Exception] = None
+        self._ready_event = asyncio.Event()
+        self._init_task = asyncio.create_task(self._initialize())
 
         self.scheduler_ref = scheduler_ref
 
-    def is_ready(self):
-        """Check if the engine is ready"""
-        return True
+    async def is_ready(self, timeout_s: float = 120.0):
+        """Block until initialization completes (or fails)."""
+        try:
+            await asyncio.wait_for(self._ready_event.wait(), timeout=timeout_s)
+        except asyncio.TimeoutError as e:
+            raise RuntimeError(
+                f"VectorDBEngine initialization timed out after {timeout_s}s"
+            ) from e
+
+        if self._init_error is not None:
+            raise RuntimeError(
+                f"VectorDBEngine failed to initialize: {self._init_error}"
+            ) from self._init_error
+
+        return self._initialized
 
     async def _initialize(self):
         """Initialize database connection and start processing tasks"""
-        # Create connection pool
-        self.pool = await asyncpg.create_pool(**self.db_config)
+        try:
+            # Create connection pool
+            # Register pgvector codecs for every pooled connection.
+            self.pool = await asyncpg.create_pool(
+                **self.db_config, init=register_vector
+            )
 
-        # Register vector type with asyncpg
-        async with self.pool.acquire() as conn:
-            await register_vector(conn)
+            # Start processing tasks
+            self.tasks = [
+                asyncio.create_task(self._process_inserts()),
+                asyncio.create_task(self._process_searches()),
+            ]
+            self._initialized = True
+        except Exception as e:
+            self._init_error = e
+            self.running = False
+            logger.error(f"VectorDBEngine initialization failed: {e}")
+            raise
+        finally:
+            self._ready_event.set()
 
-        # Start processing tasks
-        self.tasks = [
-            asyncio.create_task(self._process_inserts()),
-            asyncio.create_task(self._process_searches()),
-        ]
+    async def _finish_request(self, request: VectorDBRequest, result: Any) -> None:
+        """Send result to scheduler and release tracking state."""
+        result_ref = ray.put(result)
+        if self.scheduler_ref is not None:
+            await self.scheduler_ref.on_result.remote(
+                request.request_id, request.query_id, result_ref
+            )
+
+        if request.query_id in self.query_requests:
+            try:
+                self.query_requests[request.query_id].remove(request)
+            except ValueError:
+                pass
+            if len(self.query_requests[request.query_id]) == 0:
+                del self.query_requests[request.query_id]
+
+    async def _finish_request_error(
+        self, request: VectorDBRequest, err: Exception, where: str
+    ) -> None:
+        """Propagate engine errors instead of letting requests hang."""
+        message = (
+            f"VectorDBEngine {where} failed for {request.request_id} "
+            f"(query={request.query_id}): {err}"
+        )
+        logger.error(message)
+        await self._finish_request(request, RuntimeError(message))
 
     def _get_table_name(self, query_id: str) -> str:
         """Generate unique table name for query_id"""
@@ -234,9 +284,10 @@ class VectorDBEngine:
     async def _process_inserts(self):
         """Process insertion requests"""
         while self.running:
+            batch_requests: List[VectorDBRequest] = []
+            unresolved_by_id: Dict[str, VectorDBRequest] = {}
             try:
                 # Collect batch of insertion requests
-                batch_requests = []
                 batch_data = []
 
                 # while len(batch_requests) < self.max_batch_size:
@@ -246,6 +297,7 @@ class VectorDBEngine:
                             self.insert_queue.get(), timeout=0.1
                         )
                         batch_requests.append(request)
+                        unresolved_by_id[request.request_id] = request
                         batch_data.append(request.data)
 
                         logger.debug(
@@ -319,27 +371,28 @@ class VectorDBEngine:
                     # Update results and clean up
                     for i in indices:
                         request = batch_requests[i]
-                        result_ref = ray.put(True)
-
-                        if self.scheduler_ref is not None:
-                            await self.scheduler_ref.on_result.remote(
-                                request.request_id, request.query_id, result_ref
-                            )
-
-                        if request.query_id in self.query_requests:
-                            self.query_requests[request.query_id].remove(request)
+                        await self._finish_request(request, True)
+                        unresolved_by_id.pop(request.request_id, None)
 
             except Exception as e:
-                # traceback
                 import traceback
 
                 traceback.print_exc()
                 logger.error(f"Error in insert processing: {e}")
+                for request in list(unresolved_by_id.values()):
+                    try:
+                        await self._finish_request_error(request, e, "ingestion")
+                    except Exception as callback_err:
+                        logger.error(
+                            f"Failed to propagate ingestion error for "
+                            f"{request.request_id}: {callback_err}"
+                        )
                 continue
 
     async def _process_searches(self):
         """Process search requests"""
         while self.running:
+            request: Optional[VectorDBRequest] = None
             try:
                 try:
                     request = await asyncio.wait_for(
@@ -419,30 +472,32 @@ class VectorDBEngine:
                 logger.debug(f"search results: {search_results}")
 
                 # Update results and clean up
-                result_ref = ray.put(search_results)
-
-                if self.scheduler_ref is not None:
-                    await self.scheduler_ref.on_result.remote(
-                        request.request_id, request.query_id, result_ref
-                    )
-
-                if request.query_id in self.query_requests:
-                    self.query_requests[request.query_id].remove(request)
+                await self._finish_request(request, search_results)
 
             except Exception as e:
                 import traceback
 
                 traceback.print_exc()
-                print(f"Error in search processing: {e}")
+                logger.error(f"Error in search processing: {e}")
+                if request is not None:
+                    try:
+                        await self._finish_request_error(request, e, "search")
+                    except Exception as callback_err:
+                        logger.error(
+                            f"Failed to propagate search error for "
+                            f"{request.request_id}: {callback_err}"
+                        )
                 continue
 
     async def cleanup_query(self, query_id: str):
         """Clean up resources for a query"""
         if query_id in self.active_tables:
             table_name = self.active_tables[query_id]
-            async with self.pool.acquire() as conn:
-                await conn.execute(f"DROP TABLE IF EXISTS {table_name}")
+            if self.pool is not None:
+                async with self.pool.acquire() as conn:
+                    await conn.execute(f"DROP TABLE IF EXISTS {table_name}")
             del self.active_tables[query_id]
+        self.query_requests.pop(query_id, None)
 
     async def shutdown(self):
         """Shutdown the service"""
