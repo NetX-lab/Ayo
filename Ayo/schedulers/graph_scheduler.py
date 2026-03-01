@@ -2,7 +2,6 @@ import asyncio
 import time
 import traceback
 from collections import deque
-from queue import Queue
 from typing import Any, Dict, Optional
 
 import ray
@@ -33,15 +32,12 @@ class QueryRunner:
         self.dag = query.DAG
         self.engine_schedulers = engine_schedulers
 
-        # Task queues
-        self.running = deque()  # Running nodes
-        self.ready = Queue()  # Ready nodes
-        self.pending = deque()  # Pending nodes
+        self.running = deque()
+        self.ready = deque()
+        self.pending = deque()
 
-        # Result store
         self.nodes_outputs = {}
 
-        # Add tracking for different node types
         self.input_nodes = []
         self.compute_nodes = []
         self.output_nodes = []
@@ -50,10 +46,8 @@ class QueryRunner:
 
     def initialize(self):
         """Initialize the runner"""
-        # Get topological sort
         self.dag.topological_sort()
 
-        # Categorize nodes by type
         for node in self.dag.topo_list:
             if node.node_type == NodeType.INPUT:
                 self.input_nodes.append(node)
@@ -62,16 +56,13 @@ class QueryRunner:
             elif node.node_type == NodeType.OUTPUT:
                 self.output_nodes.append(node)
 
-        # Initialize input nodes with values
         for node in self.input_nodes:
             node.status = NodeStatus.COMPLETED
             self.nodes_outputs[node.name] = node.input_values
 
-        # Add compute and output nodes to pending
         self.pending.extend(self.compute_nodes)
         self.pending.extend(self.output_nodes)
 
-        # log the dag's input nodes
         logger.info(f"DAG input nodes: {self.input_nodes}")
         logger.info(f"DAG compute nodes: {self.compute_nodes}")
         logger.info(f"DAG output nodes: {self.output_nodes}")
@@ -81,14 +72,12 @@ class QueryRunner:
         if node.node_type != NodeType.COMPUTE:
             return node.input_kwargs
 
-        # get the corresponding transformer, if not, use the default transformer
         transformer = TRANSFORMER_REGISTRY.get(node.engine_type, DefaultTransformer())
 
         return transformer.transform(node)
 
     async def check_node_ready(self, node: Node) -> bool:
         """Check if a node is ready to execute"""
-        # Input nodes are always ready
         if node.node_type == NodeType.INPUT:
             return True
 
@@ -139,7 +128,6 @@ class QueryRunner:
                 return False
 
         else:
-            # For compute and output nodes, check parent completion
             return all(parent.status == NodeStatus.COMPLETED for parent in node.parents)
 
     async def submit_node(self, node: Node):
@@ -155,7 +143,6 @@ class QueryRunner:
                     and node.parents[0].status == NodeStatus.COMPLETED
                 ):
                     node.status = NodeStatus.COMPLETED
-                    # parent_node = node.parents[0]
                     node.update_input_kwargs(self.nodes_outputs)
                     self.nodes_outputs[node.name] = node.input_kwargs
                 return
@@ -164,7 +151,7 @@ class QueryRunner:
                 # we do the in-place aggregation here, do not need to submit to the aggregator engine which would be discarded later
                 aggregator_mode = get_aggregator_config(node)["agg_mode"]
 
-                print(f"aggregatore node {node}, agg mode {aggregator_mode}")
+                logger.debug(f"aggregator node {node}, agg mode {aggregator_mode}")
 
                 if aggregator_mode == AggMode.DUMMY:
                     node.status = NodeStatus.COMPLETED
@@ -280,8 +267,6 @@ class QueryRunner:
 
             payload = self.prepare_engine_payload(node)
 
-            # print(f"payload: {payload} for node: {node.name}")
-
             engine_type = node.engine_type
             scheduler = self.engine_schedulers.get(engine_type)
 
@@ -317,7 +302,7 @@ class QueryRunner:
         self.compute_nodes.clear()
         self.output_nodes.clear()
         self.running.clear()
-        self.ready.queue.clear()
+        self.ready.clear()
         self.pending.clear()
 
 
@@ -328,6 +313,8 @@ class GraphScheduler:
     def __init__(self, engine_schedulers: Dict[str, ray.actor.ActorHandle]):
         self.engine_schedulers = engine_schedulers
         self.query_runners: Dict[str, QueryRunner] = {}
+        self.query_status_cache: Dict[str, QueryStatus] = {}
+        self._dag_tasks = set()
 
     async def update_schedulers(
         self, engine_schedulers: Dict[str, ray.actor.ActorHandle]
@@ -347,9 +334,10 @@ class GraphScheduler:
             )
             self.query_runners[query.query_id] = runner
 
-            # Initialize and start processing
             runner.initialize()
-            asyncio.create_task(self._process_dag(runner))
+            dag_task = asyncio.create_task(self._process_dag(runner))
+            self._dag_tasks.add(dag_task)
+            dag_task.add_done_callback(self._dag_tasks.discard)
 
             return query.query_id
 
@@ -363,31 +351,25 @@ class GraphScheduler:
             last_pending_nodes_names = []
             last_running_nodes_names = []
             while not runner.dag.check_completion():
-                # check the ready nodes
                 ready_nodes = [
                     node
                     for node in runner.pending
                     if await runner.check_node_ready(node)
                 ]
 
-                # batch update the queue
                 for node in ready_nodes:
-                    runner.ready.put(node)
+                    runner.ready.append(node)
                     runner.pending.remove(node)
 
-                # batch submit the nodes
-                while not runner.ready.empty():
+                while runner.ready:
                     nodes_to_submit = []
-                    while not runner.ready.empty():
-                        nodes_to_submit.append(runner.ready.get())
+                    while runner.ready:
+                        nodes_to_submit.append(runner.ready.popleft())
 
-                    # parallel submit the nodes
                     await asyncio.gather(
                         *[runner.submit_node(node) for node in nodes_to_submit]
                     )
                     runner.running.extend(nodes_to_submit)
-
-                # print(f"runner.running: {[node.name for node in runner.running]}")
 
                 current_pending_nodes_names = [node.name for node in runner.pending]
                 current_running_nodes_names = [node.name for node in runner.running]
@@ -402,10 +384,9 @@ class GraphScheduler:
                     last_pending_nodes_names = current_pending_nodes_names
                     last_running_nodes_names = current_running_nodes_names
 
-                # batch check the running nodes
                 if runner.running:
                     try:
-                        completed_nodes = []  # add: store the completed nodes
+                        completed_nodes = []
                         results = await asyncio.gather(
                             *[
                                 asyncio.wrap_future(
@@ -418,23 +399,19 @@ class GraphScheduler:
                             return_exceptions=True,
                         )
 
-                        # check the errors in the results
                         for node, result in zip(runner.running, results):
                             if isinstance(result, Exception):
-                                # handle the failed nodes
                                 node.status = NodeStatus.FAILED
                                 node.error_message = str(result)
                                 runner.dag.error_nodes.append(node)
                                 logger.error(
                                     f"Node execution failed: {node.name}: {str(result)}"
                                 )
-                                # terminate the DAG execution immediately
                                 raise Exception(
                                     f"DAG execution terminated due to node failure: {node.name} - {str(result)}"
                                 )
 
                             elif result is not None:
-                                # handle the successful nodes
                                 logger.info(
                                     f"result have been received for node: {node.name} in graph scheduler"
                                 )
@@ -442,42 +419,34 @@ class GraphScheduler:
                                     node.output_names[0]: result
                                 }
                                 node.status = NodeStatus.COMPLETED
-                                completed_nodes.append(
-                                    node
-                                )  # add to the completed nodes list
+                                completed_nodes.append(node)
 
-                        # remove the completed nodes
                         for node in completed_nodes:
                             runner.running.remove(node)
 
                     except Exception as e:
                         logger.error(f"Error in DAG execution: {str(e)}")
-                        # mark all the running nodes as failed
                         for node in runner.running:
                             node.status = NodeStatus.FAILED
                             node.error_message = str(e)
                             runner.dag.error_nodes.append(node)
                         runner.running.clear()
-                        # set the query status to failed and raise the exception
                         runner.query.status = QueryStatus.FAILED
                         raise
 
-                await asyncio.sleep(0.01)
+                await asyncio.sleep(0.001)
 
         except Exception as e:
             logger.error(
                 f"DAG execution failed for query {runner.query.query_id}: {str(e)}"
             )
-            # ensure all the running nodes are marked as failed
             runner.dag.error_nodes.extend(runner.running)
             for node in runner.running:
                 node.status = NodeStatus.FAILED
                 node.error_message = str(e)
             runner.query.status = QueryStatus.FAILED
-            # raise the exception to the upper layer
             raise Exception(f"DAG execution failed: {str(e)}")
         finally:
-            # only set the query status to completed when there is no error
             if not runner.dag.error_nodes:
                 runner.query.status = QueryStatus.COMPLETED
             await self.cleanup_query(runner.query.query_id)
@@ -487,14 +456,15 @@ class GraphScheduler:
         if query_id in self.query_runners:
             runner = self.query_runners[query_id]
             return runner.query.status
-        else:
-            return None
+        return self.query_status_cache.get(query_id)
 
     async def cleanup_query(self, query_id: str):
         """Clean up query resources"""
         if query_id in self.query_runners:
             runner = self.query_runners[query_id]
+            self.query_status_cache[query_id] = runner.query.status
             await runner.cleanup_runtime_context()
+            del self.query_runners[query_id]
         cleanup_tasks = []
         for scheduler in self.engine_schedulers.values():
             cleanup_method = getattr(scheduler, "cleanup_query", None)
@@ -512,6 +482,12 @@ class GraphScheduler:
 
     async def shutdown(self):
         """Shutdown the graph scheduler"""
-        for query_id, runner in self.query_runners.items():
+        for query_id in list(self.query_runners.keys()):
             await self.cleanup_query(query_id)
+        for task in list(self._dag_tasks):
+            if not task.done():
+                task.cancel()
+        if self._dag_tasks:
+            await asyncio.gather(*self._dag_tasks, return_exceptions=True)
         self.query_runners = {}
+        self.query_status_cache = {}

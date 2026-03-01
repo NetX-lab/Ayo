@@ -1,10 +1,14 @@
 import asyncio
 import time
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 import ray
+
+from Ayo.logger import GLOBAL_INFO_LEVEL, get_logger
+
+logger = get_logger(__name__, level=GLOBAL_INFO_LEVEL)
 
 
 @dataclass
@@ -12,9 +16,9 @@ class BaseRequest:
     """Base data class for all engine requests"""
 
     request_id: str
-    query_id: str  # Group requests from same query
-    callback_ref: Any  # Ray ObjectRef for result
-    timestamp: float = time.time()
+    query_id: str
+    callback_ref: Any
+    timestamp: float = field(default_factory=time.time)
 
 
 class BaseEngine(ABC):
@@ -38,17 +42,13 @@ class BaseEngine(ABC):
         self.max_queue_size = max_queue_size
         self.scheduler_ref = scheduler_ref
 
-        # Async queues
         self.request_queue = asyncio.Queue(maxsize=max_queue_size)
         self.batch_queue = asyncio.Queue(maxsize=max_queue_size)
 
-        # Track requests by query_id
         self.query_requests: Dict[str, List[BaseRequest]] = {}
 
-        # Create event loop
         self.loop = asyncio.get_event_loop()
 
-        # Start processing tasks
         self.running = True
         self.tasks = [
             self.loop.create_task(self._batch_requests()),
@@ -85,9 +85,9 @@ class BaseEngine(ABC):
                 if batch_data:
                     await self.batch_queue.put(batch_data)
                 else:
-                    await asyncio.sleep(0.01)
+                    await asyncio.sleep(0)
             except Exception as e:
-                print(f"Error in batching task: {e}")
+                logger.error(f"Error in batching task: {e}")
                 continue
 
     async def _process_batches(self):
@@ -104,7 +104,7 @@ class BaseEngine(ABC):
                 await self._process_batch(batch_data)
 
             except Exception as e:
-                print(f"Error in process loop: {e}")
+                logger.error(f"Error in process loop: {e}")
                 continue
 
     async def shutdown(self):

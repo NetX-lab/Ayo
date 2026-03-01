@@ -1,7 +1,7 @@
 import asyncio
 import time
 from collections import deque
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
 import ray
@@ -22,7 +22,7 @@ class RerankerRequest:
     passages: List[str]
     top_k: int
     callback_ref: Any  # Ray ObjectRef for result
-    timestamp: float = time.time()
+    timestamp: float = field(default_factory=time.time)
 
 
 @ray.remote
@@ -84,7 +84,7 @@ class RerankerEngine:
         model.model.half()
 
         res = model.predict(["hello", "world"])  # Warm up
-        print(res)
+        logger.debug(f"Reranker warmup result: {res}")
         return model
 
     async def submit_request(
@@ -122,9 +122,9 @@ class RerankerEngine:
                 if batch_requests:
                     await self.batch_queue.put((batch_requests, batch_data))
                 else:
-                    await asyncio.sleep(0.01)
+                    await asyncio.sleep(0)
             except Exception as e:
-                print(f"Error in batching task: {e}")
+                logger.error(f"Error in batching task: {e}")
                 continue
 
     async def _process_batches(self):
@@ -244,10 +244,10 @@ class RerankerEngine:
                                     del self.query_requests[request.query_id]
 
                 except Exception as e:
-                    print(f"Error processing batch: {e}")
+                    logger.error(f"Error processing batch: {e}")
 
             except Exception as e:
-                print(f"Error in process loop: {e}")
+                logger.error(f"Error in process loop: {e}")
                 continue
 
     async def _get_next_batch(
@@ -353,7 +353,7 @@ class RerankerEngine:
                     pending_requests.append((request, end_idx))
 
         except Exception as e:
-            print(f"Error in batch construction: {e}")
+            logger.error(f"Error in batch construction: {e}")
 
         # If there are pending requests, put them back to the request queue
         for request, start_idx in pending_requests:
@@ -379,3 +379,6 @@ class RerankerEngine:
                 await task
             except asyncio.CancelledError:
                 pass
+
+    async def cleanup_query(self, query_id: str):
+        self.query_requests.pop(query_id, None)

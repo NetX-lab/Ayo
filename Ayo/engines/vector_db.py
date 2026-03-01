@@ -164,7 +164,10 @@ class VectorDBEngine:
     def _get_table_name(self, query_id: str) -> str:
         """Generate unique table name for query_id"""
         hash_obj = hashlib.md5(query_id.encode())
-        return f"vectors_{hash_obj.hexdigest()}"
+        table_name = f"vectors_{hash_obj.hexdigest()}"
+        if not table_name.replace("_", "").isalnum():
+            raise ValueError(f"Invalid table name generated: {table_name}")
+        return table_name
 
     async def _ensure_table(self, query_id: str) -> str:
         """Ensure table exists for query_id"""
@@ -515,9 +518,9 @@ class VectorDBEngine:
         try:
             for query_id in list(self.active_tables.keys()):
                 await self.cleanup_query(query_id)
-            print("Successfully cleaned up all tables")
+            logger.info("Successfully cleaned up all tables")
         except Exception as e:
-            print(f"Error cleaning up tables: {e}")
+            logger.error(f"Error cleaning up tables: {e}")
 
         # Close database pool
         if self.pool:

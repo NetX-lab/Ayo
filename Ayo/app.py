@@ -30,9 +30,9 @@ class QueryTask:
     query: Query
     config: Optional[Dict]
     future: Future
-    timestamp: float = field(default_factory=time)  # Query arrival time
+    timestamp: float = field(default_factory=time)
     status: str = "pending"
-    timeout: float = 1.0  # Query timeout in seconds
+    timeout: float = 1.0
 
 
 class APP:
@@ -40,7 +40,6 @@ class APP:
 
     def __init__(self):
         """Initialize Ayo application"""
-        # Configure logging
 
         self.engines: Dict[str, BaseEngine] = {}
         self.engine_schedulers: Dict[str, EngineScheduler] = {}
@@ -50,21 +49,17 @@ class APP:
         self.pass_manager = PassManager()
         self.scheduler_config: Dict[str, Any] = {}
 
-        # Online serving configurations
         self.max_concurrent_queries = 100
         self.query_timeout = 1.0
 
-        # Queue and concurrency control
         self.query_queue = asyncio.Queue()
         self.query_semaphore = asyncio.Semaphore(self.max_concurrent_queries)
         self.query_lock = asyncio.Lock()
 
-        # Add task tracking
         self.tasks: Set[asyncio.Task] = set()
 
         self.base_dag = None
 
-        # Performance metrics
         self.metrics = {
             "total_queries": 0,
             "successful_queries": 0,
@@ -74,7 +69,6 @@ class APP:
         }
         self.metrics_lock = Lock()
 
-        # Add these attributes
         self.is_running = False
         self.active_queries = {}
         self.thread_pool = None  # Thread pool for DAG optimization
@@ -108,10 +102,8 @@ class APP:
 
             engine_cls = self._get_engine_class(engine_type)
 
-            # Get the default config and merge it with the user config
             default_config = ENGINE_REGISTRY.get_default_config(engine_type) or {}
 
-            # First ensure the basic config fields are correct
             base_config = {
                 "name": config.name,
                 "engine_type": config.engine_type,
@@ -121,14 +113,12 @@ class APP:
                 "instances": config.instances,
             }
 
-            # Handle model_config separately
             model_config = {
                 **(default_config.get("model_config", {}) or {}),
                 **(config.model_config or {}),
             }
             base_config["model_config"] = model_config
 
-            # Handle latency_profile separately
             if config.latency_profile or default_config.get("latency_profile"):
                 base_config["latency_profile"] = {
                     **(default_config.get("latency_profile", {}) or {}),
@@ -138,17 +128,14 @@ class APP:
             if engine_type in self.engine_schedulers:
                 raise ValueError(f"Engine scheduler {engine_type} already exists")
 
-            # Create EngineConfig instance with correctly merged config
             engine_config = EngineConfig(**base_config)
 
-            # Create the scheduler with the merged config
             scheduler_actor = EngineScheduler.remote(
                 engine_class=engine_cls,
                 engine_config=engine_config,
                 scheduler_config=self.scheduler_config,
             )
 
-            # wait for the scheduler to be fully initialized
             _ = ray.get(scheduler_actor.is_ready.remote())
 
             logger.info(
@@ -195,7 +182,6 @@ class APP:
     ) -> Future:
 
         logger.info(f"Received new query request: query_id={query.query_id}")
-        # print(f"Received new query request: query_id={query.uuid}")
         future = Future()
         task = QueryTask(
             query=query,
@@ -218,9 +204,8 @@ class APP:
     async def start(self):
         """Start the application"""
         self.is_running = True
-        self.thread_pool = ThreadPoolExecutor(max_workers=100)
+        self.thread_pool = ThreadPoolExecutor(max_workers=min(os.cpu_count() or 4, 32))
 
-        # Wait for all schedulers to be ready
         await asyncio.gather(
             *[
                 scheduler.is_ready.remote()
@@ -228,7 +213,6 @@ class APP:
             ]
         )
 
-        # Create and track the queue processing task
         queue_task = asyncio.create_task(self._process_queue())
         self.tasks.add(queue_task)
         queue_task.add_done_callback(self.tasks.discard)
@@ -287,14 +271,15 @@ class APP:
                 scheduler_query_id = await self.graph_scheduler.submit_query.remote(
                     query=query_task.query,
                     config=query_task.config or {},
-                    # engine_schedulers=self.engine_schedulers
                 )
 
                 logger.info(f"Creating query monitor task: query_id={query_id}")
-                asyncio.create_task(
+                monitor_task = asyncio.create_task(
                     self._monitor_query_status(query_task, scheduler_query_id),
                     name=f"monitor_{query_id}",
                 )
+                self.tasks.add(monitor_task)
+                monitor_task.add_done_callback(self.tasks.discard)
 
         except Exception as e:
             logger.error(f"Error processing query: query_id={query_id}, error={str(e)}")
@@ -314,13 +299,11 @@ class APP:
                     await self.handle_timeout(query_task)
                     break
 
-                status = ray.get(
+                status = await asyncio.wrap_future(
                     self.graph_scheduler.get_query_status.remote(
                         query_task.query.query_id
-                    )
+                    ).future()
                 )
-
-                # logging.info(f"Query status update: query_id={task_id}, status={status}")
 
                 if status == QueryStatus.COMPLETED:
                     latency = time() - start_time
@@ -328,10 +311,12 @@ class APP:
                     logger.info(
                         f"Query completed successfully: query_id={task_id}, duration={latency:.3f}s"
                     )
-                    print(f"query_task.query.results: {query_task.query.results}")
+                    logger.debug(
+                        f"query_task.query.results: {query_task.query.results}"
+                    )
 
-                    node_results = ray.get(
-                        query_task.query.query_state.get_node_results.remote()
+                    node_results = await asyncio.wrap_future(
+                        query_task.query.query_state.get_node_results.remote().future()
                     )
                     query_task.future.set_result(node_results)
                     await self.update_metrics("successful_queries")
@@ -340,7 +325,7 @@ class APP:
                     logger.error(f"Query execution failed: query_id={task_id}")
                     raise Exception(f"Query failed: {query_task.query.error_message}")
 
-                await asyncio.sleep(0.01)
+                await asyncio.sleep(0.001)
 
         except Exception as e:
             logger.error(
@@ -393,35 +378,28 @@ class APP:
 
     def shutdown(self):
         """Shutdown the application and all its components"""
-        # Shutdown graph scheduler
         if self.graph_scheduler:
             ray.get(self.graph_scheduler.shutdown.remote())
 
-        # Shutdown all engine schedulers
         for scheduler in self.engine_schedulers.values():
             ray.get(scheduler.shutdown.remote())
 
-        # Shutdown ray
         ray.shutdown()
 
     async def stop(self):
         """Stop the application gracefully"""
         self.is_running = False
 
-        # Cancel all tracked tasks
         for task in self.tasks:
             if not task.done():
                 task.cancel()
 
-        # Wait for tasks to complete
         if self.tasks:
             await asyncio.gather(*self.tasks, return_exceptions=True)
 
-        # Clean up thread pool
         if self.thread_pool:
             self.thread_pool.shutdown(wait=True)
 
-        # Clean up remaining queries
         while not self.query_queue.empty():
             try:
                 task = self.query_queue.get_nowait()

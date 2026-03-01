@@ -1,6 +1,6 @@
 import asyncio
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
@@ -17,10 +17,10 @@ class EmbeddingRequest:
     """Data class for embedding requests"""
 
     request_id: str
-    query_id: str  # Group requests from same query
+    query_id: str
     texts: List[str]
-    callback_ref: Any  # Ray ObjectRef for result
-    timestamp: float = time.time()
+    callback_ref: Any
+    timestamp: float = field(default_factory=time.time)
 
 
 @ray.remote(num_gpus=1)
@@ -43,11 +43,11 @@ class EmbeddingEngine:
         **kwargs,
     ):
 
-        print(f"CUDA is available: {torch.cuda.is_available()}")
+        logger.info(f"CUDA is available: {torch.cuda.is_available()}")
         if torch.cuda.is_available():
-            print(f"Number of available GPUs: {torch.cuda.device_count()}")
-            print(f"Current GPU device: {torch.cuda.current_device()}")
-            print(f"GPU name: {torch.cuda.get_device_name()}")
+            logger.info(f"Number of available GPUs: {torch.cuda.device_count()}")
+            logger.info(f"Current GPU device: {torch.cuda.current_device()}")
+            logger.info(f"GPU name: {torch.cuda.get_device_name()}")
 
         self.model_name = model_name
         self.max_batch_size = max_batch_size
@@ -56,20 +56,15 @@ class EmbeddingEngine:
 
         self.name = kwargs.get("name", None)
 
-        # Initialize model
         self.model = self._load_model()
 
-        # Async queues
         self.request_queue = asyncio.Queue(maxsize=max_queue_size)
         self.batch_queue = asyncio.Queue(maxsize=max_queue_size)
 
-        # Track requests by query_id
         self.query_requests: Dict[str, List[EmbeddingRequest]] = {}
 
-        # Create event loop
         self.loop = asyncio.get_event_loop()
 
-        # Start processing tasks
         self.running = True
         self.tasks = [
             self.loop.create_task(self._batch_requests()),
@@ -86,15 +81,12 @@ class EmbeddingEngine:
         """Load the embedding model"""
         from sentence_transformers import SentenceTransformer
 
-        # self.model.encode(["hello","world"])
-
         model = SentenceTransformer(
             model_name_or_path=self.model_name, device=self.device
         )
         model.half()
         model.eval()
 
-        # warm up
         warm_up_embeddings = model.encode(["hello", "world"])
         logger.debug(f"warm_up_embeddings: {warm_up_embeddings}")
 
@@ -131,9 +123,9 @@ class EmbeddingEngine:
                 if batch_requests:
                     await self.batch_queue.put((batch_requests, batch_texts))
                 else:
-                    await asyncio.sleep(0.01)  # Avoid busy waiting
+                    await asyncio.sleep(0)
             except Exception as e:
-                print(f"Error in batching task: {e}")
+                logger.error(f"Error in batching task: {e}")
                 continue
 
     async def _process_batches(self):
@@ -147,8 +139,6 @@ class EmbeddingEngine:
                 except asyncio.TimeoutError:
                     continue
 
-                # print(f"Processing batch requests: {batch_requests}")
-
                 try:
                     embeddings = await self.loop.run_in_executor(
                         None, self._compute_embeddings, batch_texts
@@ -160,42 +150,44 @@ class EmbeddingEngine:
                             end_idx = start_idx + len(request.texts)
                             request_embeddings = embeddings[start_idx:end_idx]
 
-                            # create ObjectRef for result
-                            print(f"request_embeddings: {request_embeddings.shape}")
+                            logger.debug(
+                                f"request_embeddings shape: {request_embeddings.shape}"
+                            )
 
                             result_ref = ray.put(request_embeddings)
-
-                            # If scheduler is set, send result to scheduler
 
                             if self.scheduler_ref is not None:
                                 await self.scheduler_ref.on_result.remote(
                                     request.request_id, request.query_id, result_ref
                                 )
                             else:
-                                # If no scheduler is set, use the original callback
                                 ray.get(
                                     ray.put(
                                         request_embeddings, _owner=request.callback_ref
                                     )
                                 )
 
-                            # clean up request records
-                            # if request.query_id in self.query_requests:
-                            #     self.query_requests[request.query_id].remove(request)
-                            #     if not self.query_requests[request.query_id]:
-                            #         del self.query_requests[request.query_id]
+                            if request.query_id in self.query_requests:
+                                try:
+                                    self.query_requests[request.query_id].remove(
+                                        request
+                                    )
+                                except ValueError:
+                                    pass
+                                if not self.query_requests[request.query_id]:
+                                    del self.query_requests[request.query_id]
 
                             start_idx = end_idx
                         except Exception as e:
-                            print(f"Error processing individual request: {e}")
+                            logger.error(f"Error processing individual request: {e}")
                             continue
 
                 except Exception as e:
-                    print(f"Error computing embeddings: {e}")
+                    logger.error(f"Error computing embeddings: {e}")
                     continue
 
             except Exception as e:
-                print(f"Error in inference task: {e}")
+                logger.error(f"Error in inference task: {e}")
                 continue
 
     async def _get_next_batch(self) -> Tuple[List[EmbeddingRequest], List[str]]:
@@ -204,7 +196,6 @@ class EmbeddingEngine:
         batch_texts = []
         processed_queries = set()
 
-        # while len(batch_texts) < self.max_batch_size:
         while len(batch_texts) == 0:
             try:
                 request = await asyncio.wait_for(self.request_queue.get(), timeout=0.01)
@@ -234,7 +225,6 @@ class EmbeddingEngine:
 
     def _compute_embeddings(self, texts: List[str]) -> np.ndarray:
         """Compute embeddings for a batch of texts"""
-        # self.model.encode(["hello","world"])
         with torch.no_grad():
 
             assert isinstance(texts, list) or isinstance(texts, str)
@@ -245,7 +235,6 @@ class EmbeddingEngine:
             embeddings = self.model.encode(
                 texts, batch_size=batch_size, show_progress_bar=False
             )
-            # embeddings = embeddings[:,:768]
 
             logger.debug(
                 f"texts' type: {type(texts)}, len: {len(texts)}, embeddings shape: {embeddings.shape}"
@@ -263,3 +252,6 @@ class EmbeddingEngine:
                 await task
             except asyncio.CancelledError:
                 pass
+
+    async def cleanup_query(self, query_id: str):
+        self.query_requests.pop(query_id, None)

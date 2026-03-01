@@ -337,9 +337,8 @@ class EngineScheduler(BaseEngineScheduler):
         while self.running:
             try:
                 request = await self.complete_queue.get()
-
-                if request.result_ref is not None:
-                    try:
+                try:
+                    if request.result_ref is not None:
                         result = await asyncio.get_event_loop().run_in_executor(
                             None, ray.get, request.result_ref
                         )
@@ -362,18 +361,14 @@ class EngineScheduler(BaseEngineScheduler):
                             f"Successfully set result for request {request.request_id}"
                         )
 
-                    except Exception as e:
-                        logger.error(
-                            f"Error processing result for request {request.request_id}: {e}"
-                        )
-
-                    finally:
-                        # clean up completed request
-                        self.complete_queue.task_done()
-                        if request.request_id in self.pending_requests:
-                            del self.pending_requests[request.request_id]
-
-                await asyncio.sleep(0.01)
+                except Exception as e:
+                    logger.error(
+                        f"Error processing result for request {request.request_id}: {e}"
+                    )
+                finally:
+                    # clean up completed request
+                    self.complete_queue.task_done()
+                    self.pending_requests.pop(request.request_id, None)
 
             except Exception as e:
                 logger.error(f"Error in result processing loop: {e}")

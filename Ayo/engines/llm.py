@@ -1,6 +1,6 @@
 import asyncio
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 import ray
@@ -26,7 +26,7 @@ class LLMRequest:
     llm_partial_decoding_idx: int = -1
     sampling_params: Optional[SamplingParams] = None
     callback_ref: Any = None  # Ray ObjectRef for result callback
-    timestamp: float = time.time()
+    timestamp: float = field(default_factory=time.time)
 
 
 @ray.remote(num_gpus=1)
@@ -48,11 +48,11 @@ class LLMEngine:
         **kwargs,
     ):
         # print GPU information
-        print(f"CUDA available: {torch.cuda.is_available()}")
+        logger.info(f"CUDA available: {torch.cuda.is_available()}")
         if torch.cuda.is_available():
-            print(f"Number of available GPUs: {torch.cuda.device_count()}")
-            print(f"Current GPU device: {torch.cuda.current_device()}")
-            print(f"GPU name: {torch.cuda.get_device_name()}")
+            logger.info(f"Number of available GPUs: {torch.cuda.device_count()}")
+            logger.info(f"Current GPU device: {torch.cuda.current_device()}")
+            logger.info(f"GPU name: {torch.cuda.get_device_name()}")
 
         self.model_name = model_name
         self.max_num_seqs = max_num_seqs
@@ -70,12 +70,12 @@ class LLMEngine:
             engine_use_ray=False,
         )
 
-        print(f"Initializing vLLM engine with model: {model_name}")
+        logger.info(f"Initializing vLLM engine with model: {model_name}")
         self.engine = AsyncLLMEngine.from_engine_args(engine_args)
 
         time.sleep(10)
 
-        print(f"vLLM engine initialized with model: {model_name}")
+        logger.info(f"vLLM engine initialized with model: {model_name}")
 
         # asynchronous queue
         self.request_queue = asyncio.Queue(maxsize=max_queue_size)
@@ -161,7 +161,7 @@ class LLMEngine:
                         try:
                             await task
                         except Exception as e:
-                            print(f"Task error: {e}")
+                            logger.error(f"Task error: {e}")
                 else:
                     # If there are no active tasks, sleep briefly to avoid CPU idle
                     await asyncio.sleep(0.005)
@@ -170,7 +170,7 @@ class LLMEngine:
                 import traceback
 
                 traceback.print_exc()
-                print(f"Error in request processing loop: {e}")
+                logger.error(f"Error in request processing loop: {e}")
 
     async def _handle_request(self, request, sampling_params):
         """Helper method for processing a single LLM request"""
@@ -249,7 +249,7 @@ class LLMEngine:
                         # Create the ObjectRef for the result
                         result_ref = ray.put(result.outputs[0].text)
 
-                        print(
+                        logger.debug(
                             f"Result for decoding request {request.request_id}: {result.outputs[0].text}"
                         )
 
@@ -335,20 +335,20 @@ class LLMEngine:
                                         first_partial_result = result.outputs[
                                             0
                                         ].partial_outputs[partial_decode_idx]
-                                        print(
+                                        logger.debug(
                                             f"Time: {time.time()}, Partial output: {first_partial_result} for partial decoding idx: {partial_decode_idx}"
                                         )
 
                             if result.finished:
                                 async with self.partial_results_lock:
                                     state["finished"] = True
-                                print(f"final output: {result.outputs[0].text}")
+                                logger.debug(f"final output: {result.outputs[0].text}")
                                 del self.result_generator_tracker[
                                     request.llm_internal_id
                                 ]
                                 break
                     except Exception as e:
-                        print(f"Partial decoding failed: {e}")
+                        logger.error(f"Partial decoding failed: {e}")
                         async with self.partial_results_lock:
                             state["finished"] = True
                             state["is_generating"] = False
@@ -373,7 +373,7 @@ class LLMEngine:
                                     request.query_id,
                                     current_results[partial_decode_idx],
                                 )
-                            print(
+                            logger.debug(
                                 f"Time: {time.time()}, Partial output: {current_results[partial_decode_idx]} for partial decoding idx: {partial_decode_idx}"
                             )
                             return
@@ -393,7 +393,20 @@ class LLMEngine:
             import traceback
 
             traceback.print_exc()
-            print(f"Error processing request {request.request_id}: {e}")
+            logger.error(f"Error processing request {request.request_id}: {e}")
+
+    async def cleanup_query(self, query_id: str):
+        requests = self.query_requests.pop(query_id, [])
+        llm_internal_ids = {
+            request.llm_internal_id
+            for request in requests
+            if getattr(request, "llm_internal_id", None) is not None
+        }
+        for llm_internal_id in llm_internal_ids:
+            self.result_generator_tracker.pop(llm_internal_id, None)
+        async with self.partial_results_lock:
+            for llm_internal_id in llm_internal_ids:
+                self.partial_results.pop(llm_internal_id, None)
 
     async def shutdown(self):
         """Shutdown the service"""
@@ -428,7 +441,7 @@ class LLMEngine:
 
                 ray.kill(self.engine)
             except Exception as e:
-                print(f"Error shutting down engine: {e}")
+                logger.error(f"Error shutting down engine: {e}")
                 ray.kill(self.engine)
         else:
             if hasattr(self.engine, "_background_loop_unshielded"):
@@ -466,7 +479,7 @@ if __name__ == "__main__":
         support_partial_output=True,
         support_partial_prefilling=True,
     )
-    print("max_tokens:", sampling_params.max_tokens)
+    logger.info(f"max_tokens: {sampling_params.max_tokens}")
 
     prompt = f"""Please rewrite the following question into {refine_question_number} more refined one. \
         You should keep the original meaning of the question, but make it more suitable and clear for context retrieval. \
@@ -482,7 +495,7 @@ if __name__ == "__main__":
         You just need to output the json string, do not output any other information or additional text!!! \
         The json output:"""
 
-    print(f"prompt: {prompt}")
+    logger.info(f"prompt: {prompt}")
 
     ray.get(
         llm_engine.submit_request.remote(
@@ -497,7 +510,7 @@ if __name__ == "__main__":
     )
 
     time.sleep(3)
-    print("begin full prefilling")
+    logger.info("begin full prefilling")
     ray.get(
         llm_engine.submit_request.remote(
             "b",

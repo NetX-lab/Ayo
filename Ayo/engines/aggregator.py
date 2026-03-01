@@ -1,12 +1,16 @@
 import asyncio
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 import ray
 
+from Ayo.logger import GLOBAL_INFO_LEVEL, get_logger
+
 # This engine would not really be used in the pipeline;
 # Rather we do the in-place aggregation in the engine scheduler slide
+
+logger = get_logger(__name__, level=GLOBAL_INFO_LEVEL)
 
 
 @dataclass
@@ -18,7 +22,7 @@ class AggregateRequest:
     agg_mode: str  # Aggregation mode: concat, merge_dicts, select_best, custom
     data_sources: List[Any]  # Data sources to aggregate
     callback_ref: Any = None  # Ray ObjectRef for result callback
-    timestamp: float = time.time()
+    timestamp: float = field(default_factory=time.time)
 
 
 @ray.remote
@@ -87,9 +91,9 @@ class AggregateEngine:
                 if batch_requests:
                     await self.batch_queue.put(batch_requests)
                 else:
-                    await asyncio.sleep(0.01)  # Avoid busy waiting
+                    await asyncio.sleep(0)
             except Exception as e:
-                print(f"Error in batch processing task: {e}")
+                logger.error(f"Error in batch processing task: {e}")
                 continue
 
     async def _process_batches(self):
@@ -130,14 +134,14 @@ class AggregateEngine:
                         import traceback
 
                         traceback.print_exc()
-                        print(f"Error in processing single request: {e}")
+                        logger.error(f"Error in processing single request: {e}")
                         continue
 
             except Exception as e:
                 import traceback
 
                 traceback.print_exc()
-                print(f"Error in processing batch: {e}")
+                logger.error(f"Error in processing batch: {e}")
                 continue
 
     async def _get_next_batch(self) -> List[AggregateRequest]:
