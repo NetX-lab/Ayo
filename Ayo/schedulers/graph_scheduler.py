@@ -1,4 +1,5 @@
 import asyncio
+import os
 import time
 import traceback
 from collections import deque
@@ -37,6 +38,7 @@ class QueryRunner:
         self.pending = deque()
 
         self.nodes_outputs = {}
+        self.cancelled = False
 
         self.input_nodes = []
         self.compute_nodes = []
@@ -315,6 +317,13 @@ class GraphScheduler:
         self.query_runners: Dict[str, QueryRunner] = {}
         self.query_status_cache: Dict[str, QueryStatus] = {}
         self._dag_tasks = set()
+        self._query_futures: Dict[str, asyncio.Future] = {}
+        self._query_outcomes: Dict[str, Dict[str, Any]] = {}
+        self._cleanup_task = None
+        self._outcome_ttl_s = float(os.getenv("AYO_QUERY_OUTCOME_TTL_S", "300"))
+        self._cleanup_interval_s = float(
+            os.getenv("AYO_QUERY_OUTCOME_CLEANUP_INTERVAL_S", "60")
+        )
 
     async def update_schedulers(
         self, engine_schedulers: Dict[str, ray.actor.ActorHandle]
@@ -329,6 +338,10 @@ class GraphScheduler:
     async def submit_query(self, query: Query, config: Optional[Dict] = None) -> str:
         """Submit a new query asynchronously"""
         try:
+            loop = asyncio.get_event_loop()
+            self._query_futures[query.query_id] = loop.create_future()
+            if self._cleanup_task is None:
+                self._cleanup_task = loop.create_task(self._ttl_cleanup_loop())
             runner = QueryRunner(
                 query=query, config=config, engine_schedulers=self.engine_schedulers
             )
@@ -343,14 +356,21 @@ class GraphScheduler:
 
         except Exception as e:
             logger.error(f"Failed to submit query {query.query_id}: {str(e)}")
+            future = self._query_futures.pop(query.query_id, None)
+            if future and not future.done():
+                future.set_exception(e)
             raise
 
     async def _process_dag(self, runner: QueryRunner):
         """Process DAG execution asynchronously"""
+        dag_error = None
         try:
             last_pending_nodes_names = []
             last_running_nodes_names = []
             while not runner.dag.check_completion():
+                if runner.cancelled:
+                    runner.query.status = QueryStatus.TIMEOUT
+                    break
                 ready_nodes = [
                     node
                     for node in runner.pending
@@ -432,7 +452,8 @@ class GraphScheduler:
                             runner.dag.error_nodes.append(node)
                         runner.running.clear()
                         runner.query.status = QueryStatus.FAILED
-                        raise
+                        dag_error = e
+                        break
 
                 await asyncio.sleep(0.001)
 
@@ -445,10 +466,45 @@ class GraphScheduler:
                 node.status = NodeStatus.FAILED
                 node.error_message = str(e)
             runner.query.status = QueryStatus.FAILED
-            raise Exception(f"DAG execution failed: {str(e)}")
+            dag_error = e
         finally:
-            if not runner.dag.error_nodes:
+            if (
+                not runner.dag.error_nodes
+                and runner.query.status != QueryStatus.TIMEOUT
+            ):
                 runner.query.status = QueryStatus.COMPLETED
+            final_result = None
+            if runner.query.status == QueryStatus.COMPLETED:
+                try:
+                    final_result = await asyncio.wrap_future(
+                        runner.query.query_state.get_node_results.remote().future()
+                    )
+                except Exception as e:
+                    logger.warning(
+                        f"Failed to fetch node_results for query {runner.query.query_id}: {e}"
+                    )
+                    final_result = runner.nodes_outputs
+
+            future = self._query_futures.get(runner.query.query_id)
+            if future and not future.done():
+                if runner.query.status == QueryStatus.COMPLETED:
+                    future.set_result(final_result)
+                else:
+                    err = dag_error or Exception(
+                        f"DAG failed: {[n.name for n in runner.dag.error_nodes]}"
+                    )
+                    future.set_exception(err)
+
+            self._query_outcomes[runner.query.query_id] = {
+                "status": runner.query.status,
+                "result": (
+                    final_result
+                    if runner.query.status == QueryStatus.COMPLETED
+                    else None
+                ),
+                "error": str(dag_error) if dag_error else None,
+                "finished_ts": time.time(),
+            }
             await self.cleanup_query(runner.query.query_id)
 
     async def get_query_status(self, query_id: str) -> QueryStatus:
@@ -457,6 +513,31 @@ class GraphScheduler:
             runner = self.query_runners[query_id]
             return runner.query.status
         return self.query_status_cache.get(query_id)
+
+    async def wait_for_query(
+        self, query_id: str, timeout_s: Optional[float] = None
+    ) -> Any:
+        future = self._query_futures.get(query_id)
+        if future is not None:
+            if timeout_s is None:
+                return await future
+            return await asyncio.wait_for(future, timeout=timeout_s)
+
+        outcome = self._query_outcomes.get(query_id)
+        if outcome is None:
+            raise ValueError(f"Unknown query_id: {query_id}")
+        if outcome["status"] == QueryStatus.COMPLETED:
+            return outcome["result"]
+        raise RuntimeError(outcome.get("error") or f"Query {query_id} failed")
+
+    async def cancel_query(self, query_id: str):
+        runner = self.query_runners.get(query_id)
+        if runner:
+            runner.cancelled = True
+            runner.query.status = QueryStatus.TIMEOUT
+        future = self._query_futures.get(query_id)
+        if future and not future.done():
+            future.set_exception(asyncio.CancelledError(f"Query {query_id} cancelled"))
 
     async def cleanup_query(self, query_id: str):
         """Clean up query resources"""
@@ -480,8 +561,29 @@ class GraphScheduler:
                         f"Engine cleanup_query failed for query {query_id}: {result}"
                     )
 
+    async def _ttl_cleanup_loop(self):
+        while True:
+            await asyncio.sleep(self._cleanup_interval_s)
+            now = time.time()
+            expired = [
+                qid
+                for qid, outcome in self._query_outcomes.items()
+                if now - outcome.get("finished_ts", 0) > self._outcome_ttl_s
+            ]
+            for qid in expired:
+                self._query_outcomes.pop(qid, None)
+                self._query_futures.pop(qid, None)
+                self.query_status_cache.pop(qid, None)
+
     async def shutdown(self):
         """Shutdown the graph scheduler"""
+        for query_id, future in list(self._query_futures.items()):
+            if not future.done():
+                future.set_exception(
+                    RuntimeError(
+                        f"GraphScheduler shutting down, query {query_id} cancelled"
+                    )
+                )
         for query_id in list(self.query_runners.keys()):
             await self.cleanup_query(query_id)
         for task in list(self._dag_tasks):
@@ -489,5 +591,10 @@ class GraphScheduler:
                 task.cancel()
         if self._dag_tasks:
             await asyncio.gather(*self._dag_tasks, return_exceptions=True)
+        if self._cleanup_task and not self._cleanup_task.done():
+            self._cleanup_task.cancel()
+            await asyncio.gather(self._cleanup_task, return_exceptions=True)
         self.query_runners = {}
         self.query_status_cache = {}
+        self._query_futures = {}
+        self._query_outcomes = {}

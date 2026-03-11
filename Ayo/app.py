@@ -18,7 +18,6 @@ from Ayo.logger import GLOBAL_INFO_LEVEL, get_logger
 from Ayo.opt_pass.base_pass import OPT_Pass
 from Ayo.opt_pass.pass_manager import PassManager
 from Ayo.queries.query import Query
-from Ayo.queries.query_state import QueryStatus
 from Ayo.schedulers.engine_scheduler import EngineScheduler
 from Ayo.schedulers.graph_scheduler import GraphScheduler
 
@@ -66,6 +65,8 @@ class APP:
             "failed_queries": 0,
             "timeout_queries": 0,
             "avg_latency": 0.0,
+            "latency_sum": 0.0,
+            "latency_count": 0,
         }
         self.metrics_lock = Lock()
 
@@ -273,69 +274,34 @@ class APP:
                     config=query_task.config or {},
                 )
 
-                logger.info(f"Creating query monitor task: query_id={query_id}")
-                monitor_task = asyncio.create_task(
-                    self._monitor_query_status(query_task, scheduler_query_id),
-                    name=f"monitor_{query_id}",
-                )
-                self.tasks.add(monitor_task)
-                monitor_task.add_done_callback(self.tasks.discard)
+            start_time = time()
+            result = await asyncio.wait_for(
+                asyncio.wrap_future(
+                    self.graph_scheduler.wait_for_query.remote(
+                        scheduler_query_id
+                    ).future()
+                ),
+                timeout=query_task.timeout,
+            )
+            latency = time() - start_time
+            await self.update_metrics("avg_latency", latency)
+            logger.info(
+                f"Query completed successfully: query_id={query_id}, duration={latency:.3f}s"
+            )
+            if not query_task.future.done():
+                query_task.future.set_result(result)
+            await self.update_metrics("successful_queries")
 
+        except asyncio.TimeoutError:
+            logger.warning(f"Query monitoring timeout: query_id={query_id}")
+            await self.handle_timeout(query_task)
         except Exception as e:
             logger.error(f"Error processing query: query_id={query_id}, error={str(e)}")
-            await self.handle_error(query_task, e)
-
-    async def _monitor_query_status(self, query_task: QueryTask, query_id: str):
-
-        task_id = query_task.query.query_id
-        logger.info(f"Starting query status monitoring: query_id={task_id}")
-
-        try:
-            start_time = time()
-
-            while True:
-                if time() - start_time > query_task.timeout:
-                    logger.warning(f"Query monitoring timeout: query_id={task_id}")
-                    await self.handle_timeout(query_task)
-                    break
-
-                status = await asyncio.wrap_future(
-                    self.graph_scheduler.get_query_status.remote(
-                        query_task.query.query_id
-                    ).future()
-                )
-
-                if status == QueryStatus.COMPLETED:
-                    latency = time() - start_time
-                    await self.update_metrics("avg_latency", latency)
-                    logger.info(
-                        f"Query completed successfully: query_id={task_id}, duration={latency:.3f}s"
-                    )
-                    logger.debug(
-                        f"query_task.query.results: {query_task.query.results}"
-                    )
-
-                    node_results = await asyncio.wrap_future(
-                        query_task.query.query_state.get_node_results.remote().future()
-                    )
-                    query_task.future.set_result(node_results)
-                    await self.update_metrics("successful_queries")
-                    break
-                elif status == QueryStatus.FAILED:
-                    logger.error(f"Query execution failed: query_id={task_id}")
-                    raise Exception(f"Query failed: {query_task.query.error_message}")
-
-                await asyncio.sleep(0.001)
-
-        except Exception as e:
-            logger.error(
-                f"Error in query monitoring: query_id={task_id}, error={str(e)}"
-            )
             await self.handle_error(query_task, e)
         finally:
             async with self.query_lock:
                 self.active_queries.pop(query_task.query.query_id, None)
-                logger.info(f"Query removed from active list: query_id={task_id}")
+                logger.info(f"Query removed from active list: query_id={query_id}")
 
     async def optimize_dag(self, query_task: QueryTask):
         """Execute DAG optimization asynchronously"""
@@ -350,23 +316,31 @@ class APP:
     async def handle_timeout(self, query_task: QueryTask):
         """Handle query timeout"""
         query_task.query.set_timeout()
-        query_task.future.set_exception(
-            TimeoutError(f"Query {query_task.query.query_id} timed out")
-        )
+        if not query_task.future.done():
+            query_task.future.set_exception(
+                TimeoutError(f"Query {query_task.query.query_id} timed out")
+            )
+        if self.graph_scheduler:
+            self.graph_scheduler.cancel_query.remote(query_task.query.query_id)
         await self.update_metrics("timeout_queries")
 
     async def handle_error(self, query_task: QueryTask, error: Exception):
         """Handle query error"""
         query_task.query.fail(str(error))
-        query_task.future.set_exception(error)
+        if not query_task.future.done():
+            query_task.future.set_exception(error)
         await self.update_metrics("failed_queries")
 
     async def update_metrics(self, metric_name: str, value: Any = 1):
         """Update performance metrics"""
         async with self.metrics_lock:
             if metric_name == "avg_latency":
+                self.metrics["latency_sum"] += float(value)
+                self.metrics["latency_count"] += 1
                 self.metrics["avg_latency"] = (
-                    0.9 * self.metrics["avg_latency"] + 0.1 * value
+                    self.metrics["latency_sum"] / self.metrics["latency_count"]
+                    if self.metrics["latency_count"] > 0
+                    else 0.0
                 )
             else:
                 self.metrics[metric_name] += value
